@@ -1,0 +1,148 @@
+<app-navbar></app-navbar>
+
+<div class="page-home">
+
+  <!-- ⭐ LOADING STATE - Shows while EVERYTHING loads -->
+  <div *ngIf="loading" class="global-loading">
+    <div class="spinner-large"></div>
+    <h3>Welcome to Everest</h3>
+    <p>Loading your curated experience...</p>
+  </div>
+
+  <!-- ⭐ MAIN CONTENT - Shows ONLY when EVERYTHING is loaded -->
+  <div *ngIf="!loading">
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="hero-pattern"></div>
+      </div>
+      <div class="hero-inner">
+        <div class="hero-text">
+          <span class="hero-tag">
+            <span class="tag-dot"></span>
+            Editorial Selection
+          </span>
+          <h1 class="hero-title">The New Era of<br><em>Cameroonian</em> Luxury</h1>
+          <p class="hero-desc">Curated excellence from the heart of the continent.<br>Experience the Digital Monolith of premium retail.</p>
+          <div class="hero-actions">
+            <button class="btn-hero-primary" routerLink="/shop">Shop Now</button>
+            <button class="btn-hero-ghost" routerLink="/featured">Explore Collections</button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-orb hero-orb--1"></div>
+          <div class="hero-orb hero-orb--2"></div>
+          <div class="hero-orb hero-orb--3"></div>
+          <div class="hero-badge-float">
+            <span class="badge-num">{{ products.length }}+</span>
+            <span class="badge-lbl">Curated Products</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-banner">
+      <span>⚠️ {{ errorMessage }}</span>
+      <button (click)="retryLoading()">Retry</button>
+    </div>
+
+    <!-- Featured Products -->
+    <section class="featured">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Featured Products</h2>
+          <p class="section-sub">
+            Latest products from the store
+          </p>
+        </div>
+      </div>
+
+      <div class="products-grid">
+        <div 
+          class="product-card"
+          *ngFor="let p of products | slice:0:6"
+          [routerLink]="['/product', p.id]"
+        >
+          <div class="product-img-wrap">
+            <img
+              *ngIf="p.image_url"
+              [src]="p.image_url"
+              [alt]="p.name"
+              class="product-img"
+            />
+          </div>
+            
+          <div class="product-info">
+            <h4 class="product-name">{{ p.name }}</h4>
+            <p class="product-sub">{{ p.description | slice:0:60 }}{{ p.description.length > 60 ? '...' : '' }}</p>
+            <span class="product-price">{{ p.price | number }} CFA</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust Strip -->
+    <section class="trust-strip">
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h4>Authentic Selection</h4>
+        <p>Every product is verified by our editorial board for premium quality standards.</p>
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28">
+            <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/>
+            <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+        </div>
+        <h4>Priority Logistics</h4>
+        <p>Fast-track delivery across Cameroon with secure mobile money integrations.</p>
+      </div>
+      <div class="trust-divider"></div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <h4>Premium Support</h4>
+        <p>Our concierge service is available 24/7 to assist with your shopping journey.</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="home-footer">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="footer-logo">Everest</span>
+          <p>Elevating the Cameroonian e-commerce<br>experience through curated editorial selection.</p>
+        </div>
+        <div class="footer-links">
+          <a>Privacy Policy</a>
+          <a>Shipping Info</a>
+          <a>Contact Support</a>
+          <a>Terms of Service</a>
+        </div>
+        <div class="footer-payments">
+          <span>Secure Mobile Money Payments</span>
+          <div class="payment-icons">
+            <span class="pay-icon momo">MTN</span>
+            <span class="pay-icon om">OM</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2025 Everest E-commerce. Secure Mobile Money Payments.</span>
+      </div>
+    </footer>
+
+  </div>
+
+</div>

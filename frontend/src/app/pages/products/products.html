@@ -1,0 +1,120 @@
+<!-- products.html -->
+
+<app-navbar></app-navbar>
+
+<div class="products-page">
+
+    <!-- HEADER -->
+    <section class="products-header">
+
+        <h1 class="products-title">
+            Explore Everest Collection
+        </h1>
+
+        <p class="products-subtitle">
+            Premium products curated for modern lifestyle.
+        </p>
+
+    </section>
+
+    <!-- LOADING -->
+    <div *ngIf="isLoading" class="loading-container">
+        <div class="loader"></div>
+        <p>Loading products...</p>
+    </div>
+
+    <!-- ERROR -->
+    <div *ngIf="errorMessage" class="error-container">
+
+        <h3>Something went wrong</h3>
+
+        <p>{{ errorMessage }}</p>
+
+        <button class="retry-btn" (click)="retryLoading()">
+            Retry
+        </button>
+
+    </div>
+
+    <!-- EMPTY -->
+    <div
+        *ngIf="!isLoading && products.length === 0 && !errorMessage"
+        class="empty-container"
+    >
+        <h3>No products found</h3>
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <div
+        class="products-grid"
+        *ngIf="!isLoading && products.length > 0"
+    >
+
+        <!-- PRODUCT CARD -->
+        <div
+            class="product-card"
+            *ngFor="let p of products"
+            (click)="goToProduct(p.id)"
+        >
+
+            <!-- IMAGE -->
+            <div class="product-card__image-wrap">
+
+                <img
+                    [src]="p.image_url"
+                    [alt]="p.name"
+                    class="product-card__image"
+                    loading="lazy"
+                    decoding="async"
+                />
+
+            </div>
+
+            <!-- INFO -->
+            <div class="product-card__info">
+
+                <span class="product-card__category">
+                    {{ p.category }}
+                </span>
+
+                <h3 class="product-card__name">
+                    {{ p.name }}
+                </h3>
+
+                <p class="product-card__description">
+                    {{ p.description }}
+                </p>
+
+                <!-- BOTTOM -->
+                <div class="product-card__bottom">
+
+                    <div class="product-card__price">
+
+                        <span class="product-card__currency">
+                            CFA
+                        </span>
+
+                        <span class="product-card__value">
+                            {{ p.price | number }}
+                        </span>
+
+                    </div>
+
+                    <button
+                        class="product-card__view-btn"
+                        (click)="$event.stopPropagation(); goToProduct(p.id)"
+                    >
+                        View
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<app-footer></app-footer>

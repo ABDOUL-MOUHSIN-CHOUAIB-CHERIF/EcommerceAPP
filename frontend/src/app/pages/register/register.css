@@ -1,0 +1,185 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.register{
+    font-family: Arial, Helvetica, sans-serif;
+}
+  .register {
+      position: relative;
+      background-image: url('../../../../public/images/image1.jpg');
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    } 
+
+    .register::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #0a1928 0%, #1a3a4a 50%, transparent 100%); /* Dark overlay */
+    }
+
+    .regsiter{
+    position: relative;
+    z-index: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    text-align: left;
+  }
+ .register>*{
+  z-index: 2;
+  position: relative;
+ }
+
+ .hero-section{
+  margin-left: 20px;
+  width: 600px;
+   text-align: left;
+ }
+ .header1{
+  color: rgb(7, 66, 185);
+  margin-top: -60px;
+  font-size: 50px;
+  margin-bottom: 20px;
+ }
+ .p1{
+  font-size: 40px;
+  margin-bottom: 10px;
+ }
+ .p2{
+  font-size: 25px;
+  margin-bottom: 20px;
+ }
+ .diva{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+ }
+ .diva>*{
+  background-color: aliceblue;
+  border: none;
+  border-radius: 10px;
+  padding :10px 8px;
+  color: black;
+  height: 100px;
+  width: 200px;
+ }
+ .diva>* h2{
+   color: rgb(26, 76, 175);
+   margin-bottom: 10px ;
+ }
+ /* .diva>* p{
+    
+ } */
+
+
+ /* styling the side  */
+ .side{
+  background-color: white;
+  color: black;
+  width: 500px;
+  margin-left: 200px;
+  height: 600px;
+  border-radius: 10px;
+ }
+ .side>*{
+   padding: 10px 10px;
+ }
+ .side h1{
+   color: rgb(24, 77, 137);
+   font-size: 30px;
+ }
+ .p4{
+  font-size: 28px;
+  font-weight: bold;
+ }
+ .p4 span{
+  color: rgb(69, 107, 195);
+ }
+ .name{
+   color: rgb(19, 77, 236);
+   margin-left: -290px;
+ }
+ .name1{
+    color: rgb(19, 77, 236);
+   margin-left: -320px;
+ }
+ .inputname{
+  border: rgb(229, 226, 226) 1px solid;
+  background-color: white;
+  border-radius: 10px;
+  width: 350px;
+  margin-bottom: 5px;
+  margin-top: 8px;
+ }
+ .pass{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-left: 50px;
+ }
+ .pass >div{
+    
+    width: 200px;
+    height: 70px;
+    text-align: left;
+ }
+ .label1{
+    color: rgb(19, 77, 236);
+ }
+ .input2{
+  border: rgb(229, 226, 226) 1px solid;
+  background-color: white;
+  border-radius: 10px;
+  width: 190px;
+  height: 35px;
+  margin-bottom: 5px;
+  padding-left: 10px;
+  margin-top: 8px;
+ }
+ .join{
+   color:rgb(252, 252, 252) ;
+   border-radius: 10px;
+   border: none;
+   background-color:rgb(0, 106, 255) ;
+ }
+ .lines{
+  display: flex;
+  margin-left: 40px;
+  align-items: center;
+ }
+ .lines hr{
+  width: 150px;
+ }
+ .lines p{
+   margin-left: 10px;
+   margin-right: 10px;
+ }
+ .but{
+  width: 300px;
+  background-color: rgb(24, 116, 238);
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 30px;
+ }
+ .para{
+  font-size: 20px;
+ }
+ .para button{
+  background-color: white;
+  color: rgb(0, 106, 255);
+  border: none;
+  font-size: 20px;
+ }

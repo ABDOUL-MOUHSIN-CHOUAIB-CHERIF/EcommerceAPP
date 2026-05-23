@@ -1,0 +1,94 @@
+<!-- navbar.html -->
+
+<div class="nav">
+
+    <!-- LOGO -->
+    <div class="logo-container">
+        <h2 id="head" (click)="goToHome()">Everest</h2>
+    </div>
+
+    <!-- HAMBURGER -->
+    <button 
+        class="hamburger" 
+        (click)="toggleMenu()" 
+        [class.active]="menuOpen"
+        aria-label="Toggle navigation"
+    >
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- NAVIGATION LINKS -->
+    <div class="nav-links" [class.open]="menuOpen">
+
+        <button 
+            class="nav-btn"
+            routerLink="/products"
+            (click)="closeMenu()"
+        >
+            Products
+        </button>
+
+        <button 
+            class="nav-btn"
+            routerLink="/cart"
+            (click)="closeMenu()"
+        >
+            Cart
+            <i id="icon" class="fas fa-shopping-cart"></i>
+        </button>
+
+        <button 
+            class="nav-btn"
+            routerLink="/checkout"
+            (click)="closeMenu()"
+        >
+            Checkout
+        </button>
+
+        <button 
+            class="nav-btn"
+            routerLink="/sustainability"
+            (click)="closeMenu()"
+        >
+            Sustainability
+        </button>
+
+        <!-- MOBILE AUTH BUTTONS -->
+        <div class="mobile-buttons">
+
+            <button 
+                class="btn-login"
+                routerLink="/login"
+                (click)="closeMenu()"
+            >
+                Login
+            </button>
+
+            <button 
+                class="btn-register"
+                routerLink="/register"
+                (click)="closeMenu()"
+            >
+                Register
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- DESKTOP AUTH BUTTONS -->
+    <div class="nav-buttons">
+
+        <button class="btn-login" routerLink="/login">
+            Login
+        </button>
+
+        <button class="btn-register" routerLink="/register">
+            Register
+        </button>
+
+    </div>
+
+</div>

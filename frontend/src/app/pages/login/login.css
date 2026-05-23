@@ -1,0 +1,442 @@
+/* login.component.scss */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ─── PAGE LAYOUT ─── */
+.login-page { 
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ─── LEFT PANEL ─── */
+.left-panel {
+  position: relative;
+  width: 45%;
+  background: linear-gradient(145deg, #0047AB 0%, #003082 40%, #001a5c 100%);
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* Geometric accent shapes */
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -120px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: rgba(0, 168, 107, 0.15);
+  pointer-events: none;
+}
+
+.left-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -80px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(244, 180, 0, 0.1);
+  pointer-events: none;
+}
+
+.left-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(0, 168, 107, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(244, 180, 0, 0.06) 0%, transparent 50%);
+}
+
+.left-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 52px;
+  width: 100%;
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.brand-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+/* Hero text */
+.hero-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 0 40px;
+}
+
+.hero-text h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+
+.hero-text p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+/* Trust badges */
+.trust-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s;
+}
+
+.badge:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.badge svg {
+  color: #00A86B;
+  flex-shrink: 0;
+}
+
+/* ─── RIGHT PANEL ─── */
+.right-panel {
+  flex: 1;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Form header */
+.form-header {
+  margin-bottom: 36px;
+}
+
+.form-header h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: #0f1729;
+  letter-spacing: -0.8px;
+  margin-bottom: 8px;
+}
+
+.form-header p {
+  font-size: 15px;
+  color: #76777B;
+  line-height: 1.5;
+}
+
+/* ─── FORM ─── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 0.1px;
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: #0047AB;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: #003082;
+  text-decoration: underline;
+}
+
+/* Input field */
+.input-field {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #76777B;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 13px 14px 13px 44px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  background: white;
+  color: #0f1729;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.input-field input::placeholder {
+  color: #b0b3ba;
+}
+
+.input-field input:focus {
+  border-color: #0047AB;
+  box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.1);
+}
+
+.input-field input:focus + .input-icon,
+.input-field:focus-within .input-icon {
+  color: #0047AB;
+}
+
+/* Remember me checkbox */
+.remember-row {
+  margin-top: -4px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #4b5563;
+  font-weight: 400;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 5px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.checkbox-label input:checked ~ .checkmark {
+  background: #0047AB;
+  border-color: #0047AB;
+}
+
+.checkbox-label input:checked ~ .checkmark::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) translateY(-1px);
+  display: block;
+}
+
+/* ─── BUTTONS ─── */
+.btn-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  background: #0047AB;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.1px;
+  margin-top: 4px;
+}
+
+.btn-login:hover {
+  background: #003082;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 71, 171, 0.28);
+}
+
+.btn-login:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #b0b3ba;
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px;
+  background: white;
+  color: #374151;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.btn-google:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Sign up prompt */
+.signup-prompt {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.signup-prompt a {
+  color: #0047AB;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.signup-prompt a:hover {
+  color: #003082;
+  text-decoration: underline;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .left-panel {
+    display: none;
+  }
+
+  .right-panel {
+    padding: 40px 24px;
+  }
+
+  .form-wrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-header h2 {
+    font-size: 26px;
+  }
+
+  .right-panel {
+    padding: 32px 20px;
+    align-items: flex-start;
+    padding-top: 60px;
+  }
+}

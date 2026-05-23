@@ -1,0 +1,306 @@
+/* navbar.css */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 1rem 2rem;
+
+    background: rgb(223, 234, 244);
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.logo-container {
+    flex-shrink: 0;
+}
+
+#head {
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgb(7, 35, 84);
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+}
+
+#head:hover {
+    transform: scale(1.03);
+}
+
+/* =========================
+   NAV LINKS
+========================= */
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+
+    flex: 1;
+}
+
+/* =========================
+   NAV BUTTONS
+========================= */
+
+.nav-btn {
+    background: transparent;
+    border: none;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    color: rgb(110, 116, 130);
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition: 0.3s ease;
+
+    padding-bottom: 5px;
+}
+
+.nav-btn::after {
+    content: '';
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 0%;
+    height: 2px;
+
+    background: rgb(7, 35, 84);
+
+    transition: width 0.3s ease;
+}
+
+.nav-btn:hover {
+    color: rgb(7, 35, 84);
+}
+
+.nav-btn:hover::after {
+    width: 100%;
+}
+
+#icon {
+    margin-left: 6px;
+}
+
+/* =========================
+   AUTH BUTTONS
+========================= */
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+button {
+    cursor: pointer;
+}
+
+.btn-login,
+.btn-register {
+    border-radius: 30px;
+
+    padding: 0.7rem 1.5rem;
+
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    transition: 0.3s ease;
+
+    border: 2px solid transparent;
+}
+
+.btn-login {
+    background: transparent;
+    color: rgb(120, 120, 120);
+
+    border-color: rgb(120, 120, 120);
+}
+
+.btn-login:hover {
+    background: rgb(120, 120, 120);
+    color: white;
+}
+
+.btn-register {
+    background: rgb(7, 35, 84);
+    color: white;
+
+    border-color: rgb(7, 35, 84);
+}
+
+.btn-register:hover {
+    background: rgb(10, 45, 104);
+}
+
+/* =========================
+   MOBILE BUTTONS
+========================= */
+
+.mobile-buttons {
+    display: none;
+}
+
+/* =========================
+   HAMBURGER
+========================= */
+
+.hamburger {
+    display: none;
+
+    width: 30px;
+    height: 22px;
+
+    flex-direction: column;
+    justify-content: space-between;
+
+    background: transparent;
+    border: none;
+
+    z-index: 1002;
+}
+
+.hamburger span {
+    width: 100%;
+    height: 3px;
+
+    background: rgb(7, 35, 84);
+
+    border-radius: 10px;
+
+    transition: 0.3s ease;
+}
+
+/* ANIMATION */
+
+.hamburger.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* =========================
+   TABLET + MOBILE
+========================= */
+
+@media (max-width: 968px) {
+
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-buttons {
+        display: none;
+    }
+
+    .nav-links {
+        position: fixed;
+
+        top: 0;
+        right: -100%;
+
+        width: 75%;
+        height: 100vh;
+
+        background: rgb(223, 234, 244);
+
+        flex-direction: column;
+        justify-content: center;
+
+        gap: 2rem;
+
+        transition: right 0.3s ease;
+
+        box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+
+        overflow-y: auto;
+
+        will-change: transform;
+        transform: translateZ(0);
+
+        z-index: 1001;
+    }
+
+    .nav-links.open {
+        right: 0;
+    }
+
+    .nav-btn {
+        font-size: 1.2rem;
+    }
+
+    .mobile-buttons {
+        display: flex;
+
+        flex-direction: column;
+
+        width: 80%;
+
+        gap: 1rem;
+
+        margin-top: 2rem;
+    }
+
+    .mobile-buttons button {
+        width: 100%;
+    }
+}
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
+@media (max-width: 480px) {
+
+    .nav {
+        padding: 1rem;
+    }
+
+    #head {
+        font-size: 1.6rem;
+    }
+
+    .nav-links {
+        width: 85%;
+    }
+
+    .nav-btn {
+        font-size: 1rem;
+    }
+}
