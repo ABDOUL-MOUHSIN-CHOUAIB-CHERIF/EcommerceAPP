@@ -2,12 +2,22 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';  // ← Add Observable
 import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { CartService } from '../../core/services/cart';
 import { AuthService } from '../../core/services/auth';
-import { ProductService } from '../../core/services/product';  // ← ADD THIS
+import { ProductService } from '../../core/services/product';
+
+// Define the Product type
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image_url: string;
+  category: string;
+  description?: string;
+}
 
 interface CartItemDisplay {
   id: number;
@@ -45,7 +55,7 @@ export class Cart implements OnInit {
     private router: Router,
     private cartService: CartService,
     private authService: AuthService,
-    private productService: ProductService,  // ← ADD THIS
+    private productService: ProductService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -79,14 +89,14 @@ export class Cart implements OnInit {
           return;
         }
         
-        // For each cart item, fetch the product details
-        const productRequests = rawItems.map((item: any) => 
+        // Create an array of observables for each product
+        const productRequests: Observable<Product>[] = rawItems.map((item: any) => 
           this.productService.getProduct(item.product)
         );
         
-        // Wait for ALL product details to load
+        // Use forkJoin with proper typing
         forkJoin(productRequests).subscribe({
-          next: (products: any[]) => {
+          next: (products: Product[]) => {  
             console.log('✅ Loaded products:', products);
             
             // Combine cart items with product details
@@ -110,14 +120,14 @@ export class Cart implements OnInit {
             this.isLoading = false;
             this.cdr.detectChanges();
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error loading product details:', error);
             this.isLoading = false;
             this.cdr.detectChanges();
           }
         });
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading cart:', error);
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -152,7 +162,7 @@ export class Cart implements OnInit {
           this.calculateAll();
           this.cdr.detectChanges();
         },
-        error: (error) => console.error('Error updating quantity:', error)
+        error: (error: any) => console.error('Error updating quantity:', error)
       });
     }
   }
@@ -164,7 +174,7 @@ export class Cart implements OnInit {
         this.calculateAll();
         this.cdr.detectChanges();
       },
-      error: (error) => console.error('Error removing item:', error)
+      error: (error: any) => console.error('Error removing item:', error)
     });
   }
 
