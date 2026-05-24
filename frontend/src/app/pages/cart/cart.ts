@@ -2,11 +2,23 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { CartService } from '../../core/services/cart';
 import { AuthService } from '../../core/services/auth';
-import { CartItem } from '../../models/cart';
+import { ProductService } from '../../core/services/product';  // ← ADD THIS
+
+interface CartItemDisplay {
+  id: number;
+  quantity: number;
+  productId: number;
+  productName: string;
+  productPrice: number;
+  productImage: string;
+  productCategory: string;
+  total: number;
+}
 
 @Component({
   selector: 'app-cart',
@@ -17,13 +29,12 @@ import { CartItem } from '../../models/cart';
 })
 export class Cart implements OnInit {
   
-  cartItems: CartItem[] = [];
+  cartItems: CartItemDisplay[] = [];
   promoCode: string = '';
   promoApplied: boolean = false;
   isLoading: boolean = true;
   userId: number | null = null;
   
-  // Store calculated values to display in UI
   subtotal: number = 0;
   shipping: number = 0;
   tax: number = 0;
@@ -34,6 +45,7 @@ export class Cart implements OnInit {
     private router: Router,
     private cartService: CartService,
     private authService: AuthService,
+    private productService: ProductService,  // ← ADD THIS
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -47,85 +59,97 @@ export class Cart implements OnInit {
     }
   }
 
- loadCartItems() {
-  this.isLoading = true;
-  this.cdr.detectChanges();
-  
-  console.log('Loading cart for user:', this.userId);
-  
-  this.cartService.getCart(this.userId!).subscribe({
-    next: (response: any) => {
-      console.log('🔍 FULL CART RESPONSE:', JSON.stringify(response, null, 2));
-      console.log('🔍 Cart items:', response.items);
-      console.log('🔍 First item structure:', response.items?.[0]);
-      console.log('🔍 First item product:', response.items?.[0]?.product);
-      
-      this.cartItems = response.items || [];
-      
-      // Debug each item
-      this.cartItems.forEach((item, index) => {
-        console.log(`Item ${index}:`, {
-          id: item.id,
-          quantity: item.quantity,
-          product: item.product,
-          productName: item.product?.name,
-          productPrice: item.product?.price,
-          productImage: item.product?.image_url
-        });
-      });
-      
-      this.calculateAll();
-      this.isLoading = false;
-      this.cdr.detectChanges();
-    },
-    error: (error) => {
-      console.error('Error loading cart:', error);
-      this.isLoading = false;
-      this.cdr.detectChanges();
-    }
-  });
-}
-
-  // ← NEW: Calculate all values in one place
-  calculateAll() {
-    this.subtotal = this.getSubtotal();
-    this.shipping = this.getShipping();
-    this.tax = this.getTax();
-    this.discountAmount = this.getDiscount();
-    this.total = this.getTotal();
+  loadCartItems() {
+    this.isLoading = true;
     this.cdr.detectChanges();
+    
+    console.log('Loading cart for user:', this.userId);
+    
+    this.cartService.getCart(this.userId!).subscribe({
+      next: (response: any) => {
+        console.log('Raw cart response:', response);
+        
+        const rawItems = response.items || [];
+        
+        if (rawItems.length === 0) {
+          this.cartItems = [];
+          this.calculateAll();
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          return;
+        }
+        
+        // For each cart item, fetch the product details
+        const productRequests = rawItems.map((item: any) => 
+          this.productService.getProduct(item.product)
+        );
+        
+        // Wait for ALL product details to load
+        forkJoin(productRequests).subscribe({
+          next: (products: any[]) => {
+            console.log('✅ Loaded products:', products);
+            
+            // Combine cart items with product details
+            this.cartItems = rawItems.map((item: any, index: number) => {
+              const product = products[index];
+              return {
+                id: item.id,
+                quantity: item.quantity,
+                productId: item.product,
+                productName: product?.name || 'Unknown Product',
+                productPrice: product?.price || 0,
+                productImage: product?.image_url || '',
+                productCategory: product?.category || 'General',
+                total: (product?.price || 0) * item.quantity
+              };
+            });
+            
+            console.log('✅ Combined cart items:', this.cartItems);
+            
+            this.calculateAll();
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            console.error('Error loading product details:', error);
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error loading cart:', error);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
-  getSubtotal(): number {
-    return this.cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  calculateAll() {
+    this.subtotal = this.cartItems.reduce((sum, item) => sum + (item.productPrice * item.quantity), 0);
+    this.shipping = this.subtotal > 50000 ? 0 : 5000;
+    this.tax = this.subtotal * 0.05;
+    this.discountAmount = this.promoApplied && this.promoCode === 'EVEREST20' ? this.subtotal * 0.2 : 0;
+    this.total = this.subtotal + this.shipping + this.tax - this.discountAmount;
+    this.cdr.detectChanges();
+    
+    console.log('Calculated totals:', {
+      subtotal: this.subtotal,
+      shipping: this.shipping,
+      tax: this.tax,
+      discount: this.discountAmount,
+      total: this.total
+    });
   }
 
-  getShipping(): number {
-    return this.subtotal > 50000 ? 0 : 5000;
-  }
-
-  getTax(): number {
-    return this.subtotal * 0.05;
-  }
-
-  getDiscount(): number {
-    if (this.promoApplied && this.promoCode === 'EVEREST20') {
-      return this.subtotal * 0.2;
-    }
-    return 0;
-  }
-
-  getTotal(): number {
-    return this.subtotal + this.shipping + this.tax - this.discountAmount;
-  }
-
-  updateQuantity(item: CartItem, change: number) {
+  updateQuantity(item: CartItemDisplay, change: number) {
     const newQuantity = item.quantity + change;
     if (newQuantity >= 1 && newQuantity <= 99) {
       this.cartService.updateCartItem(item.id, newQuantity).subscribe({
         next: () => {
           item.quantity = newQuantity;
-          this.calculateAll(); // ← Recalculate everything
+          item.total = item.productPrice * newQuantity;
+          this.calculateAll();
           this.cdr.detectChanges();
         },
         error: (error) => console.error('Error updating quantity:', error)
@@ -133,11 +157,11 @@ export class Cart implements OnInit {
     }
   }
 
-  removeItem(item: CartItem) {
+  removeItem(item: CartItemDisplay) {
     this.cartService.removeCartItem(item.id).subscribe({
       next: () => {
         this.cartItems = this.cartItems.filter(i => i.id !== item.id);
-        this.calculateAll(); // ← Recalculate everything
+        this.calculateAll();
         this.cdr.detectChanges();
       },
       error: (error) => console.error('Error removing item:', error)
@@ -147,7 +171,7 @@ export class Cart implements OnInit {
   applyPromo() {
     if (this.promoCode === 'EVEREST20') {
       this.promoApplied = true;
-      this.calculateAll(); // ← Recalculate with discount
+      this.calculateAll();
       alert('Promo code applied! 20% discount');
     } else {
       alert('Invalid promo code');
