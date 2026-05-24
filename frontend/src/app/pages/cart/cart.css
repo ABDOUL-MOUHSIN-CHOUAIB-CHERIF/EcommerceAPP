@@ -29,6 +29,27 @@
   font-size: 1rem;
 }
 
+/* Add to cart.css */
+.promo-hint {
+  font-size: 0.7rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.promo-success {
+  font-size: 0.7rem;
+  color: #10b981;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.summary-row.discount {
+  color: #10b981;
+  font-weight: 600;
+}
+
 /* Loading */
 .loading-state {
   text-align: center;

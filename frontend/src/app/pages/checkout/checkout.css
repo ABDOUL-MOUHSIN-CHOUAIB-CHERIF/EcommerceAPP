@@ -223,7 +223,85 @@
   padding: 0.5rem 0;
   font-size: 0.9rem;
 }
+/* Add this to your existing CSS */
+.summary-item-header {
+  display: grid;
+  grid-template-columns: 2fr 0.5fr 1fr;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
 
+.summary-item-header span:first-child {
+  text-align: left;
+}
+
+.summary-item-header span:nth-child(2) {
+  text-align: center;
+}
+
+.summary-item-header span:last-child {
+  text-align: right;
+}
+
+/* Update existing summary-item to align properly */
+.summary-item {
+  display: grid;
+  grid-template-columns: 2fr 0.5fr 1fr;
+  align-items: center;
+  padding: 0.75rem 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.item-name {
+  color: #374151;
+  font-weight: 500;
+}
+
+.item-qty {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.item-price {
+  text-align: right;
+  font-weight: 600;
+  color: #001b4b;
+}
+
+/* Make responsive for mobile */
+@media (max-width: 768px) {
+  .summary-item-header {
+    font-size: 0.7rem;
+  }
+  
+  .summary-item {
+    grid-template-columns: 2fr 0.5fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .item-name {
+    font-size: 0.85rem;
+  }
+  
+  .item-price {
+    font-size: 0.85rem;
+  }
+}
 .item-info {
   display: flex;
   gap: 0.5rem;

@@ -52,7 +52,23 @@ export class Register {
     });
   }
 
-  goToLogin() {
+  // Add this method to handle responsive adjustments
+ngAfterViewInit() {
+    this.adjustForMobile();
+    window.addEventListener('resize', () => this.adjustForMobile());
+}
+
+adjustForMobile() {
+    const registerDiv = document.querySelector('.register');
+    if (window.innerWidth <= 768) {
+        registerDiv?.classList.add('mobile-view');
+    } else {
+        registerDiv?.classList.remove('mobile-view');
+    }
+}
+
+// Don't forget to implement the goToLogin method if not exists
+goToLogin() {
     this.router.navigate(['/login']);
-  }
+}
 }

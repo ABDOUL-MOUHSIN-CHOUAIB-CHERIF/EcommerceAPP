@@ -1,6 +1,6 @@
 // products.ts
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';  // ← ADD ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -40,7 +40,8 @@ export class Products implements OnInit {
     private productService: ProductService,
     private authService: AuthService,
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef  // ← ADD THIS
   ) {}
 
   ngOnInit(): void {
@@ -50,8 +51,8 @@ export class Products implements OnInit {
   loadAllData(): void {
 
     this.isLoading = true;
-
     this.errorMessage = '';
+    this.cdr.detectChanges();  // ← FORCE DETECTION AFTER LOADING STARTS
 
     const userId = this.authService.getUserId();
 
@@ -60,9 +61,7 @@ export class Products implements OnInit {
     };
 
     if (userId) {
-
       requests.cart = this.cartService.getCart(userId);
-
       requests.profile = this.authService.getProfile();
     }
 
@@ -73,9 +72,7 @@ export class Products implements OnInit {
         this.products = results.products || [];
 
         if (results.cart) {
-
           const cartItems = results.cart.items || [];
-
           this.cartCount = cartItems.reduce(
             (sum: number, item: any) => sum + item.quantity,
             0
@@ -86,9 +83,9 @@ export class Products implements OnInit {
           this.userProfile = results.profile;
         }
 
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 0);
+        // REMOVE the setTimeout - you don't need it anymore
+        this.isLoading = false;
+        this.cdr.detectChanges();  // ← CRITICAL: Force view update after data loads
 
         console.log('Products loaded successfully');
       },
@@ -97,10 +94,9 @@ export class Products implements OnInit {
 
         console.error('Products loading error:', error);
 
-        this.errorMessage =
-          'Unable to load products. Please check your connection.';
-
+        this.errorMessage = 'Unable to load products. Please check your connection.';
         this.isLoading = false;
+        this.cdr.detectChanges();  // ← FORCE UPDATE ON ERROR
       }
     });
   }
@@ -110,7 +106,6 @@ export class Products implements OnInit {
   }
 
   goToProduct(id: number): void {
-
     this.router.navigate(['/product-detail', id]);
   }
 }

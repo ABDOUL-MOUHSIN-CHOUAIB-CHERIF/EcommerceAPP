@@ -1,1 +1,31 @@
 /* You can add global styles to this file, and also import other style files */
+/* Prevent horizontal scroll on mobile */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+/* Prevent horizontal scrolling on all devices */
+/* Add to your global styles.css */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+input, button, select, textarea {
+    font-family: inherit;
+}
+
+/* Smooth scrolling on mobile */
+@media (max-width: 768px) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* Smooth responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+}

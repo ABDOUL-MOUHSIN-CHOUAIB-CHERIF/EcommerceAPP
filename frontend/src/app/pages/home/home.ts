@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Navbar } from '../../shared/navbar/navbar';
+import { Footer } from '../../shared/footer/footer';
 
 @Component({
   selector: 'app-home',
-  imports: [ Navbar],
+  imports: [ Navbar, Footer ],
   templateUrl: './home.html',
   styleUrl: './home.css',
 }) 
@@ -13,7 +14,7 @@ export class Home {
 
      gotToRegister(){
             this.router.navigate(['/register'])
-        }
+        } 
        goToLogin(){
             this.router.navigate(['/login'])
         }

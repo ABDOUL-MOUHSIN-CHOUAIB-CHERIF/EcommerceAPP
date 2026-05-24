@@ -1,12 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+
+
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';  
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';  
 import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { CartService } from '../../core/services/cart';
 import { AuthService } from '../../core/services/auth';
+import { CartRefreshService } from '../../core/services/cart-refresh';  
 
 @Component({
   selector: 'app-checkout',
@@ -15,12 +20,12 @@ import { AuthService } from '../../core/services/auth';
   templateUrl: './checkout.html',
   styleUrls: ['./checkout.css']
 })
-export class Checkout implements OnInit {
+export class Checkout implements OnInit, OnDestroy {  
   
   cartItems: any[] = [];
   userProfile: any = null;
   userId: number | null = null;
-  isLoading: boolean = true;  // ← ONE loading state for EVERYTHING
+  isLoading: boolean = true;
   isProcessing: boolean = false;
   
   shippingDetails = {
@@ -44,11 +49,30 @@ export class Checkout implements OnInit {
   selectedDelivery = this.deliveryMethods[0];
   selectedPayment = this.paymentMethods[0];
   
+  private refreshSubscription: Subscription;  
+  private routeSubscription: Subscription;    
+  
   constructor(
     private router: Router,
     private cartService: CartService,
-    private authService: AuthService
-  ) {}
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private cartRefreshService: CartRefreshService  
+  ) {
+    // ✅ Listen for cart refresh events
+    this.refreshSubscription = this.cartRefreshService.refreshCart$.subscribe(() => {
+      console.log('📢 Cart refresh received on checkout, reloading...');
+      this.loadAllData();
+    });
+    
+    // ✅ Listen for route changes
+    this.routeSubscription = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      console.log('📍 Route changed to checkout, reloading data...');
+      this.loadAllData();
+    });
+  }
   
   ngOnInit() {
     this.userId = this.authService.getUserId();
@@ -58,44 +82,54 @@ export class Checkout implements OnInit {
       return;
     }
     
-    // ✅ LOAD EVERYTHING AT ONCE - Synchronously
     this.loadAllData();
+  }
+  
+  ngOnDestroy() {
+    // ✅ Clean up subscriptions
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
   }
   
   loadAllData() {
     this.isLoading = true;
+    this.cdr.detectChanges();
     
-    // Use forkJoin to load ALL APIs simultaneously
     forkJoin({
       cart: this.cartService.getCart(this.userId!),
       profile: this.authService.getProfile()
     }).subscribe({
       next: (results) => {
-        // Both API calls complete at the SAME time
         this.cartItems = results.cart.items || [];
         this.userProfile = results.profile;
         
-        // Auto-fill shipping details from profile
         if (this.userProfile) {
           this.shippingDetails.fullName = this.userProfile.full_name || this.userProfile.username || '';
           this.shippingDetails.phoneNumber = this.userProfile.phone || '';
         }
         
-        this.isLoading = false;  // ← Everything loaded, hide spinner
-        console.log('All data loaded:', {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        
+        console.log('✅ Checkout data loaded:', {
           cartItems: this.cartItems.length,
           userProfile: this.userProfile
         });
       },
       error: (error) => {
-        console.error('Error loading data:', error);
+        console.error('❌ Error loading checkout data:', error);
         this.isLoading = false;
+        this.cdr.detectChanges();
         
-        // Still try to load cart even if profile fails
         this.cartService.getCart(this.userId!).subscribe({
           next: (cart) => {
             this.cartItems = cart.items || [];
             this.isLoading = false;
+            this.cdr.detectChanges();
           }
         });
       }
@@ -106,12 +140,14 @@ export class Checkout implements OnInit {
     this.deliveryMethods.forEach(m => m.selected = false);
     method.selected = true;
     this.selectedDelivery = method;
+    this.cdr.detectChanges();
   }
   
   selectPayment(method: any) {
     this.paymentMethods.forEach(m => m.selected = false);
     method.selected = true;
     this.selectedPayment = method;
+    this.cdr.detectChanges();
   }
   
   getSubtotal(): number {
@@ -124,6 +160,10 @@ export class Checkout implements OnInit {
   
   getTotal(): number {
     return this.getSubtotal() + this.getDeliveryPrice();
+  }
+  
+  getItemTotal(item: any): number {
+    return item.product.price * item.quantity;
   }
   
   isFormValid(): boolean {
@@ -142,16 +182,19 @@ export class Checkout implements OnInit {
     }
     
     this.isProcessing = true;
+    this.cdr.detectChanges();
     
     this.cartService.checkout(this.userId!).subscribe({
       next: (response) => {
         this.isProcessing = false;
+        this.cdr.detectChanges();
         alert('Order placed successfully!');
         this.router.navigate(['/order-confirmation']);
       },
       error: (error) => {
         console.error('Error placing order:', error);
         this.isProcessing = false;
+        this.cdr.detectChanges();
         alert('Failed to place order. Please try again.');
       }
     });

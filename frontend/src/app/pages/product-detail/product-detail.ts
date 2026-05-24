@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+
+
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { ProductService } from '../../core/services/product';
 import { CartService } from '../../core/services/cart';
 import { AuthService } from '../../core/services/auth';
+import { CartRefreshService } from '../../core/services/cart-refresh'; 
 import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { Product } from '../../models/product';
@@ -32,7 +35,9 @@ export class ProductDetail implements OnInit {
     private router: Router,
     private productService: ProductService,
     private cartService: CartService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private cartRefreshService: CartRefreshService 
   ) {}
 
   ngOnInit() {
@@ -47,16 +52,17 @@ export class ProductDetail implements OnInit {
     } else {
       this.errorMessage = 'Product not found';
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
   loadAllData(productId: number) {
     this.isLoading = true;
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
     console.log('Starting forkJoin for product ID:', productId);
 
-    // Test each API call individually first
     this.productService.getProduct(productId).subscribe({
       next: (product) => {
         console.log('✅ getProduct SUCCESS:', product?.name);
@@ -75,35 +81,32 @@ export class ProductDetail implements OnInit {
       }
     });
 
-    // Create requests
     const requests: any = {
       product: this.productService.getProduct(productId),
       allProducts: this.productService.getProducts()
     };
     
-    // Add cart request if user is logged in
     if (this.userId) {
       requests.cart = this.cartService.getCart(this.userId);
     }
 
     console.log('Executing forkJoin with requests:', Object.keys(requests));
 
-    // Load EVERYTHING at once with forkJoin
     forkJoin(requests).subscribe({
       next: (results: any) => {
         console.log('✅ forkJoin SUCCESS!', results);
         
-        // Product details
         this.product = results.product;
         this.selectedImage = results.product.image_url;
         
-        // Related products (from same category)
         const allProducts = results.allProducts;
         this.relatedProducts = allProducts
           .filter((p: Product) => p.category === this.product?.category && p.id !== this.product?.id)
           .slice(0, 4);
         
         this.isLoading = false;
+        this.cdr.detectChanges();
+        
         console.log('Product loaded:', this.product?.name);
         console.log('Related products:', this.relatedProducts.length);
       },
@@ -111,18 +114,20 @@ export class ProductDetail implements OnInit {
         console.error('❌ forkJoin FAILED:', error);
         this.errorMessage = 'Unable to load product details. Please try again.';
         this.isLoading = false;
+        this.cdr.detectChanges();
         
-        // Try to load just the product if forkJoin fails
         this.productService.getProduct(productId).subscribe({
           next: (product) => {
             console.log('✅ Fallback: Product loaded individually');
             this.product = product;
             this.selectedImage = product.image_url;
             this.errorMessage = '';
+            this.cdr.detectChanges();
           },
           error: (err) => {
             console.error('❌ Fallback also failed:', err);
             this.errorMessage = 'Product not found';
+            this.cdr.detectChanges();
           }
         });
       }
@@ -151,12 +156,12 @@ export class ProductDetail implements OnInit {
   }
 
   addToCart() {
-      if (this.authService.isTokenExpired()) {
-        alert('Session expired. Please login again.');
-        this.authService.logout();
-        this.router.navigate(['/login']);
-        return;
-      }
+    if (this.authService.isTokenExpired()) {
+      alert('Session expired. Please login again.');
+      this.authService.logout();
+      this.router.navigate(['/login']);
+      return;
+    }
     
     const userId = this.authService.getUserId();
     
@@ -182,6 +187,20 @@ export class ProductDetail implements OnInit {
       next: (response) => {
         console.log('Cart response:', response);
         alert(`${this.product?.name} added to cart!`);
+        
+        // ✅ TRIGGER CART REFRESH FOR CART PAGE AND NAVBAR
+        this.cartRefreshService.triggerCartRefresh();
+        
+        // Also get updated cart count and refresh navbar
+        this.cartService.getCart(userId).subscribe({
+          next: (cart: any) => {
+            const cartItems = cart.items || [];
+            const cartCount = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
+            this.cartRefreshService.triggerNavbarRefresh(cartCount);
+          }
+        });
+        
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error adding to cart:', error);

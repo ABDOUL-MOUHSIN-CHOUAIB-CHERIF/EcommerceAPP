@@ -38,7 +38,7 @@
           <span></span>
         </div>
 
-        <!-- Items from Django -->
+        <!-- Items -->
         <div class="cart-item" *ngFor="let item of cartItems">
           <div class="cart-item-product">
             <div class="cart-item-image">
@@ -72,36 +72,41 @@
         </div>
       </div>
 
-      <!-- Order Summary -->
+      <!-- Order Summary - NOW WITH ACTUAL VALUES -->
       <div class="order-summary">
         <h2 class="summary-title">Order Summary</h2>
         
+        <!-- Subtotal -->
         <div class="summary-row">
           <span>Subtotal</span>
-          <span>{{ getSubtotal() | number }} CFA</span>
+          <span>{{ subtotal | number }} CFA</span>
         </div>
         
+        <!-- Shipping -->
         <div class="summary-row">
           <span>Shipping</span>
-          <span *ngIf="getShipping() === 0">Free</span>
-          <span *ngIf="getShipping() > 0">{{ getShipping() | number }} CFA</span>
+          <span *ngIf="shipping === 0">Free</span>
+          <span *ngIf="shipping > 0">{{ shipping | number }} CFA</span>
         </div>
         
+        <!-- Tax -->
         <div class="summary-row">
-          <span>Taxes</span>
-          <span>Calculated at checkout</span>
+          <span>Tax (5%)</span>
+          <span>{{ tax | number }} CFA</span>
         </div>
         
-        <div class="summary-row discount" *ngIf="getDiscount() > 0">
+        <!-- Discount (only show if applied) -->
+        <div class="summary-row discount" *ngIf="discountAmount > 0">
           <span>Discount (20%)</span>
-          <span>-{{ getDiscount() | number }} CFA</span>
+          <span>-{{ discountAmount | number }} CFA</span>
         </div>
         
         <div class="summary-divider"></div>
         
+        <!-- GRAND TOTAL -->
         <div class="summary-row total">
           <span>Total Cost</span>
-          <span>{{ getTotal() | number }} CFA</span>
+          <span>{{ total | number }} CFA</span>
         </div>
         
         <!-- Promo Code -->
@@ -114,12 +119,16 @@
               [(ngModel)]="promoCode">
             <button class="apply-btn" (click)="applyPromo()">Apply</button>
           </div>
+          <p class="promo-hint" *ngIf="!promoApplied">Use code: EVEREST20 for 20% off</p>
+          <p class="promo-success" *ngIf="promoApplied">✓ Promo code applied! 20% discount</p>
         </div>
         
+        <!-- Checkout Button -->
         <button class="checkout-btn" (click)="proceedToCheckout()">
           Proceed to Checkout
         </button>
         
+        <!-- Security Badge -->
         <div class="security-badge">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>

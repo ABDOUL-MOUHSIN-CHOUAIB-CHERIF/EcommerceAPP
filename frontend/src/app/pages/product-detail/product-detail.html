@@ -2,14 +2,14 @@
 
 <div class="page-product">
 
-  <!-- ⭐ LOADING STATE -->
+  <!--  LOADING STATE -->
   <div *ngIf="isLoading" class="global-loading">
     <div class="spinner-large"></div>
     <h3>Loading Product Details</h3>
     <p>Fetching premium product information...</p>
   </div>
 
-  <!-- ⭐ ERROR STATE -->
+  <!--  ERROR STATE -->
   <div *ngIf="!isLoading && errorMessage" class="error-container">
     <div class="error-icon">⚠️</div>
     <h3>Something went wrong</h3>
@@ -17,7 +17,7 @@
     <button class="retry-btn" (click)="retryLoading()">Try Again</button>
   </div>
 
-  <!-- ⭐ PRODUCT CONTENT - Shows when loaded -->
+  <!--  PRODUCT CONTENT - Shows when loaded -->
   <div *ngIf="!isLoading && !errorMessage && product">
     <div class="product-container">
 

@@ -5,6 +5,11 @@
     padding: 0;
     box-sizing: border-box;
 }
+.nav {
+    /* Keep your existing styles, just add these: */
+    overflow: visible;
+    max-width: 100%;
+}
 
 .nav {
     width: 100%;
@@ -112,9 +117,25 @@
     margin-left: 6px;
 }
 
-/* =========================
-   AUTH BUTTONS
-========================= */
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 18px;
+  text-align: center;
+}
+
+.nav-btn {
+  position: relative;
+}
+
+
 
 .nav-buttons {
     display: flex;
@@ -285,19 +306,82 @@ button {
 /* =========================
    SMALL MOBILE
 ========================= */
+@media (max-width: 968px) {
+    /* Add this to prevent body scroll when menu is open */
+    body.menu-open {
+        overflow: hidden;
+    }
 
-@media (max-width: 480px) {
+    .hamburger {
+        display: flex;
+        position: relative;
+        z-index: 1002;
+    }
 
+    .nav-buttons {
+        display: none;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 75%;
+        max-width: 300px;
+        height: 100vh;
+        background: rgb(223, 234, 244);
+        flex-direction: column;
+        justify-content: center;
+        gap: 2rem;
+        transition: right 0.3s ease-in-out;
+        box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+        overflow-y: auto;
+        z-index: 1001;
+        padding: 2rem;
+    }
+
+    .nav-links.open {
+        right: 0;
+    }
+
+    /* Make sure nav doesn't overflow */
     .nav {
-        padding: 1rem;
+        overflow: visible;
+        padding: 1rem 2rem;
+    }
+
+    .nav-btn {
+        font-size: 1.2rem;
+        width: 100%;
+        text-align: center;
+    }
+
+    .mobile-buttons {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .mobile-buttons button {
+        width: 100%;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .nav {
+        padding: 0.8rem 1rem;
     }
 
     #head {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
     }
 
     .nav-links {
         width: 85%;
+        max-width: 280px;
     }
 
     .nav-btn {

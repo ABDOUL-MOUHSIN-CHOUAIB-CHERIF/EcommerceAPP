@@ -30,14 +30,15 @@
             Products
         </button>
 
-        <button 
-            class="nav-btn"
-            routerLink="/cart"
-            (click)="closeMenu()"
-        >
-            Cart
-            <i id="icon" class="fas fa-shopping-cart"></i>
-        </button>
+            <button 
+                class="nav-btn"
+                routerLink="/cart"
+                (click)="closeMenu()"
+            >
+                Cart
+                <i id="icon" class="fas fa-shopping-cart"></i>
+                <span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+            </button>
 
         <button 
             class="nav-btn"
@@ -91,4 +92,4 @@
 
     </div>
 
-</div>
+</div> 
