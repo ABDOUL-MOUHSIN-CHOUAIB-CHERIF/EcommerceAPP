@@ -14,7 +14,7 @@
       <p>Loading your checkout information...</p>
       <p class="loading-sub">Please wait while we prepare your order</p>
     </div>
-
+ 
     <!-- CONTENT - Shows ONLY when EVERYTHING is loaded -->
     <div *ngIf="!isLoading && cartItems.length > 0">
       
@@ -106,6 +106,7 @@
                 <span>Total</span>
               </div>
               
+              <!-- FIXED: Use proper property names -->
               <div class="summary-item" *ngFor="let item of cartItems">
                 <div class="item-info">
                   <span class="item-name">{{ item.product.name }}</span>
@@ -120,14 +121,14 @@
             <!-- Subtotal -->
             <div class="summary-row">
               <span>Subtotal</span>
-              <span>{{ getSubtotal() | number }} CFA</span>
+              <span>{{ subtotal | number }} CFA</span>
             </div>
             
             <!-- Delivery -->
             <div class="summary-row">
               <span>Delivery</span>
-              <span *ngIf="getDeliveryPrice() === 0">Free</span>
-              <span *ngIf="getDeliveryPrice() > 0">{{ getDeliveryPrice() | number }} CFA</span>
+              <span *ngIf="deliveryPrice === 0">Free</span>
+              <span *ngIf="deliveryPrice > 0">{{ deliveryPrice | number }} CFA</span>
             </div>
             
             <div class="summary-divider"></div>
@@ -135,7 +136,7 @@
             <!-- Grand Total -->
             <div class="summary-row total">
               <span>Total Cost</span>
-              <span>{{ getTotal() | number }} CFA</span>
+              <span>{{ total | number }} CFA</span>
             </div>
             
             <!-- Place Order Button -->

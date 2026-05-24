@@ -304,7 +304,9 @@
 }
 .item-info {
   display: flex;
-  gap: 0.5rem;
+  gap: 6.5rem;
+  flex-direction: row;
+  width: 150%;
 }
 
 .item-name {
@@ -314,11 +316,13 @@
 .item-qty {
   color: #9ca3af;
   font-size: 0.8rem;
+  
 }
 
 .item-price {
   font-weight: 500;
   color: #1a1c1f;
+  margin-left: 100px;
 }
 
 .summary-divider {

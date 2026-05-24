@@ -1,17 +1,12 @@
-
-
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';  
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';  
 import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { CartService } from '../../core/services/cart';
 import { AuthService } from '../../core/services/auth';
-import { CartRefreshService } from '../../core/services/cart-refresh';  
+import { ProductService } from '../../core/services/product';
 
 @Component({
   selector: 'app-checkout',
@@ -20,14 +15,16 @@ import { CartRefreshService } from '../../core/services/cart-refresh';
   templateUrl: './checkout.html',
   styleUrls: ['./checkout.css']
 })
-export class Checkout implements OnInit, OnDestroy {  
-  
+export class Checkout implements OnInit {
   cartItems: any[] = [];
   userProfile: any = null;
   userId: number | null = null;
   isLoading: boolean = true;
   isProcessing: boolean = false;
-  
+  subtotal: number = 0;
+  deliveryPrice: number = 0;
+  total: number = 0;
+
   shippingDetails = {
     fullName: '',
     phoneNumber: '',
@@ -35,137 +32,138 @@ export class Checkout implements OnInit, OnDestroy {
     city: '',
     postalCode: ''
   };
-  
+
   deliveryMethods = [
     { id: 'standard', name: 'Standard Shipping', days: '3-5 Business Days', price: 0, selected: true },
     { id: 'express', name: 'Express Courier', days: 'Same day in Douala/Yaoundé', price: 5500, selected: false }
   ];
-  
+
   paymentMethods = [
     { id: 'mobile_money', name: 'Mobile Money', description: 'MTN MoMo or Orange Money', icon: '📱', selected: true },
     { id: 'card', name: 'Credit / Debit Card', description: 'Visa, Mastercard, or Verve', icon: '💳', selected: false }
   ];
-  
+
   selectedDelivery = this.deliveryMethods[0];
   selectedPayment = this.paymentMethods[0];
-  
-  private refreshSubscription: Subscription;  
-  private routeSubscription: Subscription;    
-  
+
   constructor(
     private router: Router,
     private cartService: CartService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef,
-    private cartRefreshService: CartRefreshService  
-  ) {
-    // ✅ Listen for cart refresh events
-    this.refreshSubscription = this.cartRefreshService.refreshCart$.subscribe(() => {
-      console.log('📢 Cart refresh received on checkout, reloading...');
-      this.loadAllData();
-    });
-    
-    // ✅ Listen for route changes
-    this.routeSubscription = this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
-      console.log('📍 Route changed to checkout, reloading data...');
-      this.loadAllData();
-    });
-  }
-  
+    private productService: ProductService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
   ngOnInit() {
     this.userId = this.authService.getUserId();
-    
     if (!this.userId) {
       this.router.navigate(['/login']);
       return;
     }
-    
     this.loadAllData();
   }
-  
-  ngOnDestroy() {
-    // ✅ Clean up subscriptions
-    if (this.refreshSubscription) {
-      this.refreshSubscription.unsubscribe();
-    }
-    if (this.routeSubscription) {
-      this.routeSubscription.unsubscribe();
-    }
-  }
-  
+
   loadAllData() {
     this.isLoading = true;
     this.cdr.detectChanges();
-    
-    forkJoin({
-      cart: this.cartService.getCart(this.userId!),
-      profile: this.authService.getProfile()
-    }).subscribe({
-      next: (results) => {
-        this.cartItems = results.cart.items || [];
-        this.userProfile = results.profile;
-        
-        if (this.userProfile) {
-          this.shippingDetails.fullName = this.userProfile.full_name || this.userProfile.username || '';
-          this.shippingDetails.phoneNumber = this.userProfile.phone || '';
+
+    this.cartService.getCart(this.userId!).subscribe({
+      next: (cartResponse: any) => {
+        const rawCartItems = cartResponse.items || [];
+
+        if (rawCartItems.length === 0) {
+          this.cartItems = [];
+          this.calculateAll();
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          return;
         }
-        
-        this.isLoading = false;
-        this.cdr.detectChanges();
-        
-        console.log('✅ Checkout data loaded:', {
-          cartItems: this.cartItems.length,
-          userProfile: this.userProfile
+
+        let loadedCount = 0;
+        const tempItems: any[] = [];
+
+        rawCartItems.forEach((item: any, index: number) => {
+          this.productService.getProduct(item.product).subscribe({
+            next: (product: any) => {
+              tempItems[index] = {
+                id: item.id,
+                quantity: item.quantity,
+                product: product
+              };
+              loadedCount++;
+
+              if (loadedCount === rawCartItems.length) {
+                this.cartItems = tempItems;
+                this.authService.getProfile().subscribe({
+                  next: (profile: any) => {
+                    this.userProfile = profile;
+                    if (this.userProfile) {
+                      this.shippingDetails.fullName = this.userProfile.full_name || this.userProfile.username || '';
+                      this.shippingDetails.phoneNumber = this.userProfile.phone || '';
+                    }
+                    this.calculateAll();
+                    this.isLoading = false;
+                    this.cdr.detectChanges();
+                  },
+                  error: () => {
+                    this.calculateAll();
+                    this.isLoading = false;
+                    this.cdr.detectChanges();
+                  }
+                });
+              }
+            },
+            error: (error: any) => {
+              console.error('Error loading product:', error);
+              tempItems[index] = {
+                id: item.id,
+                quantity: item.quantity,
+                product: { name: 'Product Unavailable', price: 0, image_url: '', category: 'Unknown' }
+              };
+              loadedCount++;
+
+              if (loadedCount === rawCartItems.length) {
+                this.cartItems = tempItems;
+                this.calculateAll();
+                this.isLoading = false;
+                this.cdr.detectChanges();
+              }
+            }
+          });
         });
       },
-      error: (error) => {
-        console.error('❌ Error loading checkout data:', error);
+      error: (error: any) => {
+        console.error('Error loading cart:', error);
         this.isLoading = false;
         this.cdr.detectChanges();
-        
-        this.cartService.getCart(this.userId!).subscribe({
-          next: (cart) => {
-            this.cartItems = cart.items || [];
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          }
-        });
       }
     });
   }
-  
+
+  calculateAll() {
+    this.subtotal = this.cartItems.reduce((sum: number, item: any) => {
+      const price = item.product?.price || 0;
+      return sum + (price * item.quantity);
+    }, 0);
+    this.deliveryPrice = this.selectedDelivery.price;
+    this.total = this.subtotal + this.deliveryPrice;
+    this.cdr.detectChanges();
+  }
+
   selectDelivery(method: any) {
     this.deliveryMethods.forEach(m => m.selected = false);
     method.selected = true;
     this.selectedDelivery = method;
-    this.cdr.detectChanges();
+    this.calculateAll();
   }
-  
+
   selectPayment(method: any) {
     this.paymentMethods.forEach(m => m.selected = false);
     method.selected = true;
     this.selectedPayment = method;
     this.cdr.detectChanges();
   }
-  
-  getSubtotal(): number {
-    return this.cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-  }
-  
-  getDeliveryPrice(): number {
-    return this.selectedDelivery.price;
-  }
-  
-  getTotal(): number {
-    return this.getSubtotal() + this.getDeliveryPrice();
-  }
-  
-  getItemTotal(item: any): number {
-    return item.product.price * item.quantity;
-  }
-  
+
   isFormValid(): boolean {
     return !!(
       this.shippingDetails.fullName &&
@@ -174,24 +172,24 @@ export class Checkout implements OnInit, OnDestroy {
       this.shippingDetails.city
     );
   }
-  
+
   placeOrder() {
     if (!this.isFormValid()) {
       alert('Please fill in all required fields');
       return;
     }
-    
+
     this.isProcessing = true;
     this.cdr.detectChanges();
-    
+
     this.cartService.checkout(this.userId!).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.isProcessing = false;
         this.cdr.detectChanges();
         alert('Order placed successfully!');
-        this.router.navigate(['/order-confirmation']);
+        this.router.navigate(['/product']);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error placing order:', error);
         this.isProcessing = false;
         this.cdr.detectChanges();
@@ -199,11 +197,11 @@ export class Checkout implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   goBackToCart() {
     this.router.navigate(['/cart']);
   }
-  
+
   retryLoading() {
     this.loadAllData();
   }
