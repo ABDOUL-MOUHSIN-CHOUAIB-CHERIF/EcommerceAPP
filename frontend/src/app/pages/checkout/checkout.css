@@ -309,6 +309,25 @@
   width: 150%;
 }
 
+/* Add to checkout.css */
+.payment-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #eef2ff;
+  border-radius: 0.75rem;
+}
+
+.info-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #1e40af;
+}
+
+.info-box svg {
+  flex-shrink: 0;
+}
 .item-name {
   color: #374151;
 }

@@ -1,4 +1,4 @@
-from rest_framework.views import APIView
+from rest_framework.views import APIView, csrf_exempt
 from rest_framework.response import Response
 from rest_framework import status
 from urllib3 import request
@@ -8,7 +8,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import EmailTokenObtainPairSerializer
-
+from django.views.decorators.http import require_http_methods
+import json
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
@@ -204,3 +205,22 @@ class ProfileView(APIView):
     def get(self, request):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
+    
+@csrf_exempt
+@require_http_methods(["GET"])
+def test_campay_connection(request):
+            """Test if CamPay keys are working"""
+            try:
+                service = CamPayService()
+                token = service.get_access_token()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'CamPay connection successful!',
+                    'token_preview': token[:20] + '...' if token else 'None'
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'success': False,
+                    'error': str(e)
+                }, status=500)

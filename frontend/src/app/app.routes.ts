@@ -10,12 +10,14 @@ import { Profile } from './pages/profile/profile';
 import { Products } from './pages/products/products';
 import { ProductDetail } from './pages/product-detail/product-detail';
 import { authGuard } from './core/guards/auth-guard';
+import { TestPayment } from './pages/test-payment/test-payment';
 
 export const routes: Routes = [
     {path: '', redirectTo: '/home', pathMatch: 'full' },
     {path: 'home' , component: Home},
     {path: 'register', component: Register},
     {path: 'login', component: Login},
+     { path: 'test-payment', component: TestPayment },
     {path: 'dashboard', component: Dashboard , canActivate: [authGuard]},
     {path: 'cart' , component: Cart , canActivate: [authGuard]},
     {path: 'checkout', component: Checkout, canActivate: [authGuard]},

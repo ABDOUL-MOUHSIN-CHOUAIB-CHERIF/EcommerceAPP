@@ -1,6 +1,7 @@
+from django import views
 from django.urls import path
 from .views import ProductListCreateView ,ProductDetailView,CartView,CartItemDetailView,ProfileView ,CheckoutView ,OrderHistoryView ,OrderDetailView, RegisterView
-from .views import EmailTokenObtainPairView
+from .views import EmailTokenObtainPairView, test_campay_connection
 
 urlpatterns = [
     path('products/', ProductListCreateView.as_view()),
@@ -13,4 +14,5 @@ urlpatterns = [
       path('order/<int:pk>/', OrderDetailView.as_view()),
       path('register/', RegisterView.as_view()),
     path('profile/', ProfileView.as_view()),
+    path('test-campay/', test_campay_connection, name='test_campay'),
 ]
