@@ -110,7 +110,6 @@ export class Checkout implements OnInit {
                     if (this.userProfile) {
                       this.shippingDetails.fullName = this.userProfile.full_name || this.userProfile.username || '';
                       this.shippingDetails.phoneNumber = this.userProfile.phone || '';
-                      // Auto-detect provider on load
                       this.detectAndSetProvider();
                     }
                     this.calculateAll();
@@ -176,20 +175,23 @@ export class Checkout implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ✅ DETECT PROVIDER FROM PHONE NUMBER (AUTO)
+  // ✅ DETECT PROVIDER FROM PHONE NUMBER
   detectProvider(phone: string): string {
     if (!phone) return '';
     
     const cleanPhone = phone.trim();
     
-    // Orange Cameroon: starts with 65
-    if (cleanPhone.startsWith('65')) {
-      return 'orange';
+    // MTN Cameroon: starts with 6 (not 65, 68, 69)
+    if (cleanPhone.startsWith('6') && 
+        !cleanPhone.startsWith('65') && 
+        !cleanPhone.startsWith('68') && 
+        !cleanPhone.startsWith('69')) {
+      return 'mtn';
     }
     
-    // MTN Cameroon: starts with 6 (but not 65)
-    if (cleanPhone.startsWith('6') && !cleanPhone.startsWith('65')) {
-      return 'mtn';
+    // Orange Cameroon: starts with 65, 68, 69
+    if (cleanPhone.startsWith('65') || cleanPhone.startsWith('68') || cleanPhone.startsWith('69')) {
+      return 'orange';
     }
     
     return 'unknown';
@@ -226,12 +228,10 @@ export class Checkout implements OnInit {
     this.detectedProvider = provider;
     
     if (provider === 'mtn') {
-      // Auto-select MTN payment method
       this.selectedPayment = this.paymentMethods.find(p => p.id === 'mobile_money')!;
       this.phoneError = '';
     } 
     else if (provider === 'orange') {
-      // Auto-select Orange payment method
       this.selectedPayment = this.paymentMethods.find(p => p.id === 'orange_money')!;
       this.phoneError = '';
     }
@@ -239,7 +239,7 @@ export class Checkout implements OnInit {
       this.phoneError = 'Phone number must be 9 digits (e.g., 670000000)';
     }
     else if (phone.length === 9 && provider === 'unknown') {
-      this.phoneError = 'Please enter a valid MTN (6xxxxxxx) or Orange (65xxxxxxx) number';
+      this.phoneError = 'Please enter a valid MTN (6xxxxxxx) or Orange (65/68/69xxxxxx) number';
     }
     else {
       this.phoneError = '';
@@ -248,12 +248,11 @@ export class Checkout implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ✅ VALIDATE PHONE NUMBER (called when user types)
   onPhoneNumberChange() {
     this.detectAndSetProvider();
   }
 
-  // ✅ FINAL VALIDATION BEFORE PAYMENT
+  // ✅ VALIDATE PHONE NUMBER BEFORE PAYMENT
   validatePhoneNumberBeforePayment(): string | null {
     const phone = this.shippingDetails.phoneNumber.trim();
     
@@ -267,15 +266,11 @@ export class Checkout implements OnInit {
     
     const provider = this.detectProvider(phone);
     
-    if (provider === 'mtn') {
-      return null; // Valid MTN
+    if (provider === 'mtn' || provider === 'orange') {
+      return null;
     }
     
-    if (provider === 'orange') {
-      return null; // Valid Orange
-    }
-    
-    return 'Please enter a valid MTN (6xxxxxxx) or Orange (65xxxxxxx) number';
+    return 'Please enter a valid MTN or Orange Cameroon number';
   }
 
   isFormValid(): boolean {
@@ -289,38 +284,12 @@ export class Checkout implements OnInit {
     );
   }
 
-  // ✅ Create order before payment
-  async createOrder(): Promise<any> {
-    const response = await fetch('http://localhost:8000/api/orders/create/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-      },
-      body: JSON.stringify({
-        items: this.cartItems.map((item: any) => ({
-          product_id: item.product.id,
-          quantity: item.quantity,
-          price: item.product.price,
-          name: item.product.name
-        })),
-        shipping: this.shippingDetails,
-        delivery_method: this.selectedDelivery.name,
-        payment_method: this.selectedPayment.id,
-        subtotal: this.subtotal,
-        delivery_price: this.deliveryPrice,
-        total_amount: this.total
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to create order');
-    }
-    
-    return response.json();
+  // ✅ GENERATE LOCAL ORDER ID (No API call)
+  generateLocalOrderId(): number {
+    return Date.now();
   }
 
-  // ✅ Initiate CamPay Mobile Money Payment
+  // ✅ INITIATE PAYMENT DIRECTLY (NO ORDER CREATION)
   initiateMobilePayment() {
     // Validate form
     if (!this.isFormValid()) {
@@ -336,58 +305,50 @@ export class Checkout implements OnInit {
     this.isProcessing = true;
     this.cdr.detectChanges();
     
-    // Step 1: Create order
-    this.createOrder().then(order => {
-      console.log('Order created:', order);
-      
-      // Determine provider for display
-      const provider = this.detectProvider(this.shippingDetails.phoneNumber);
-      const providerName = provider === 'mtn' ? 'MTN' : 'Orange';
-      
-      // Step 2: Initiate CamPay payment
-      this.paymentService.initiateMobilePayment({
-        amount: this.total,
-        phone_number: this.shippingDetails.phoneNumber,
-        payment_method: this.selectedPayment.id,
-        order_id: order.id
-      }).subscribe({
-        next: (response: any) => {
-          console.log('Payment response:', response);
+    // Generate local order ID (no backend call!)
+    const localOrderId = this.generateLocalOrderId();
+    console.log('Local order ID generated:', localOrderId);
+    
+    // Determine provider for display
+    const provider = this.detectProvider(this.shippingDetails.phoneNumber);
+    const providerName = provider === 'mtn' ? 'MTN' : 'Orange';
+    
+    // Call CamPay payment directly
+    this.paymentService.initiateMobilePayment({
+      amount: this.total,
+      phone_number: this.shippingDetails.phoneNumber,
+      payment_method: this.selectedPayment.id,
+      order_id: localOrderId
+    }).subscribe({
+      next: (response: any) => {
+        console.log('Payment response:', response);
+        
+        if (response.success) {
+          this.paymentReference = response.reference;
           
-          if (response.success) {
-            this.paymentReference = response.reference;
-            
-            // Show success message with instructions
-            alert(`✅ Payment initiated!\n\n📱 ${providerName}: ${this.shippingDetails.phoneNumber}\n💰 Amount: ${this.total} CFA\n📝 Order: #${order.id}\n\n🔐 Please check your phone and enter your PIN when prompted.\n\n⏳ Payment will be confirmed within 30 seconds.`);
-            
-            // Start polling for payment status
-            this.pollPaymentStatus(response.reference, order.id);
-          } else {
-            alert(`❌ Payment failed: ${response.message}`);
-            this.isProcessing = false;
-            this.cdr.detectChanges();
-          }
-        },
-        error: (error: any) => {
-          console.error('Payment error:', error);
-          alert('Failed to initiate payment. Please try again.');
+          alert(`✅ Payment initiated!\n\n📱 ${providerName}: ${this.shippingDetails.phoneNumber}\n💰 Amount: ${this.total} CFA\n📝 Order Ref: #${localOrderId}\n\n🔐 Please check your phone and enter your PIN when prompted.\n\n⏳ Payment will be confirmed within 30 seconds.`);
+          
+          // Start polling for payment status
+          this.pollPaymentStatus(response.reference, localOrderId);
+        } else {
+          alert(`❌ Payment failed: ${response.message}`);
           this.isProcessing = false;
           this.cdr.detectChanges();
         }
-      });
-      
-    }).catch(error => {
-      console.error('Order creation error:', error);
-      alert('Failed to create order. Please try again.');
-      this.isProcessing = false;
-      this.cdr.detectChanges();
+      },
+      error: (error: any) => {
+        console.error('Payment error:', error);
+        alert('Failed to initiate payment. Please try again.');
+        this.isProcessing = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
   // ✅ Poll for payment status
   pollPaymentStatus(reference: string, orderId: number) {
     let attempts = 0;
-    const maxAttempts = 15; // 15 attempts = 45 seconds
+    const maxAttempts = 10; // 10 attempts = 30 seconds
     
     const interval = setInterval(() => {
       attempts++;
@@ -414,7 +375,7 @@ export class Checkout implements OnInit {
             clearInterval(interval);
             this.isProcessing = false;
             this.cdr.detectChanges();
-            alert('⏰ Payment timeout. Please check your order status later or contact support.');
+            alert('⏰ Payment timeout. Please contact support if amount was deducted.');
           }
         },
         error: (error: any) => {
@@ -426,12 +387,11 @@ export class Checkout implements OnInit {
           }
         }
       });
-    }, 3000); // Check every 3 seconds
+    }, 3000);
   }
 
-  //  Main place order method
+  // ✅ Main place order method
   placeOrder() {
-    // Route to appropriate payment method
     if (this.selectedPayment.id === 'mobile_money' || this.selectedPayment.id === 'orange_money') {
       this.initiateMobilePayment();
     } else {

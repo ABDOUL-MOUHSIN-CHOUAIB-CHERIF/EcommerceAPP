@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'corsheaders',               
     # Local apps
     'api',
-    # 'payments',                  
+    'payments',                  
 ]
 
 REST_FRAMEWORK = {
