@@ -328,6 +328,87 @@
 .info-box svg {
   flex-shrink: 0;
 }
+
+/* Phone Detection Styles */
+.phone-detection {
+  margin-top: 0.5rem;
+}
+
+.detected-provider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.detected-provider.provider-mtn {
+  background: #e8f5e9;
+  border-left: 3px solid #ffcc00;
+}
+
+.detected-provider.provider-orange {
+  background: #fff3e0;
+  border-left: 3px solid #ff6600;
+}
+
+.provider-icon {
+  font-size: 1.1rem;
+}
+
+.provider-text {
+  flex: 1;
+  color: #333;
+}
+
+.provider-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.provider-badge.badge-mtn {
+  background: #ffcc00;
+  color: #000;
+}
+
+.provider-badge.badge-orange {
+  background: #ff6600;
+  color: #fff;
+}
+
+.phone-error {
+  color: #e53935;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: #ffebee;
+  border-radius: 0.25rem;
+}
+
+.phone-hint {
+  display: block;
+  font-size: 0.7rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.auto-badge {
+  font-size: 0.7rem;
+  color: #10b981;
+  background: #d1fae5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+
+.option-card.auto-selected {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
 .item-name {
   color: #374151;
 }

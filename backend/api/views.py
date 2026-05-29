@@ -10,6 +10,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import EmailTokenObtainPairSerializer
 from django.views.decorators.http import require_http_methods
 import json
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from .models import Order, OrderItem  
+
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
@@ -224,3 +228,63 @@ def test_campay_connection(request):
                     'success': False,
                     'error': str(e)
                 }, status=500)
+            
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_order(request):
+    """Create a new order"""
+    try:
+        data = json.loads(request.body)
+        user = request.user
+        
+        # Get user ID from token if not authenticated
+        if not user.is_authenticated:
+            # Get user from Authorization header
+            auth_header = request.headers.get('Authorization')
+            if auth_header and auth_header.startswith('Bearer '):
+                token = auth_header.split(' ')[1]
+                # You'll need to decode token to get user
+                # For now, use a default or get from data
+                user_id = data.get('user_id')
+                from django.contrib.auth.models import User
+                user = User.objects.get(id=user_id)
+        
+        # Create order
+        order = Order.objects.create(
+            user=user,
+            full_name=data['shipping']['fullName'],
+            phone_number=data['shipping']['phoneNumber'],
+            delivery_address=data['shipping']['deliveryAddress'],
+            city=data['shipping']['city'],
+            postal_code=data['shipping'].get('postalCode', ''),
+            delivery_method=data['delivery_method'],
+            payment_method=data['payment_method'],
+            subtotal=data['subtotal'],
+            delivery_price=data['delivery_price'],
+            total_amount=data['total_amount'],
+            status='pending'
+        )
+        
+        # Create order items
+        for item in data['items']:
+            OrderItem.objects.create(
+                order=order,
+                product_id=item['product_id'],
+                quantity=item['quantity'],
+                price=item['price']
+            )
+        
+        return JsonResponse({
+            'success': True,
+            'id': order.id,
+            'reference': f"ORD-{order.id}",
+            'message': 'Order created successfully'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

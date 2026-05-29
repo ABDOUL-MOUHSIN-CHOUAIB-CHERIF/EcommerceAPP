@@ -15,7 +15,7 @@
       <p class="loading-sub">Please wait while we prepare your order</p>
     </div>
  
-    <!-- CONTENT - Shows ONLY when EVERYTHING is loaded -->
+    <!-- CONTENT -->
     <div *ngIf="!isLoading && cartItems.length > 0">
       
       <div class="checkout-content">
@@ -34,18 +34,40 @@
             <div class="form-row">
               <div class="form-group">
                 <label>Phone Number <span class="required">*</span></label>
-                <input type="tel" class="form-control" [(ngModel)]="shippingDetails.phoneNumber">
+                <input type="tel" class="form-control" 
+                       [(ngModel)]="shippingDetails.phoneNumber" 
+                       (input)="onPhoneNumberChange()"
+                       placeholder="670000000 or 650000000">
+                
+                <!-- Provider Detection Display -->
+                <div class="phone-detection" *ngIf="shippingDetails.phoneNumber">
+                  <div class="detected-provider" [class]="getProviderColorClass(detectedProvider)" *ngIf="detectedProvider">
+                    <span class="provider-icon">
+                      <span *ngIf="detectedProvider === 'mtn'">📱</span>
+                      <span *ngIf="detectedProvider === 'orange'">📱</span>
+                    </span>
+                    <span class="provider-text">Detected: {{ getProviderDisplayName(detectedProvider) }}</span>
+                    <span class="provider-badge" [class]="detectedProvider === 'mtn' ? 'badge-mtn' : 'badge-orange'">
+                      {{ detectedProvider === 'mtn' ? 'MTN' : 'ORANGE' }}
+                    </span>
+                  </div>
+                  <div class="phone-error" *ngIf="phoneError">
+                    ⚠️ {{ phoneError }}
+                  </div>
+                </div>
+                
+                <small class="phone-hint">Format: 670000000 (MTN) or 650000000 (Orange)</small>
               </div>
               
               <div class="form-group">
                 <label>City <span class="required">*</span></label>
-                <input type="text" class="form-control" [(ngModel)]="shippingDetails.city">
+                <input type="text" class="form-control" [(ngModel)]="shippingDetails.city" placeholder="Douala, Yaoundé...">
               </div>
             </div>
             
             <div class="form-group">
               <label>Delivery Address <span class="required">*</span></label>
-              <input type="text" class="form-control" [(ngModel)]="shippingDetails.deliveryAddress">
+              <input type="text" class="form-control" [(ngModel)]="shippingDetails.deliveryAddress" placeholder="Street, Quarter, Building...">
             </div>
             
             <div class="form-group">
@@ -73,12 +95,12 @@
             </div>
           </div>
           
-          <!-- Payment Method -->
+          <!-- Payment Method (Auto-selected based on phone) -->
           <div class="checkout-section">
             <h2 class="section-title">Payment Method</h2>
             
             <div class="options-grid">
-              <div class="option-card" [class.selected]="method.selected" *ngFor="let method of paymentMethods" (click)="selectPayment(method)">
+              <div class="option-card" [class.selected]="method.selected" [class.auto-selected]="method.selected && detectedProvider" *ngFor="let method of paymentMethods" (click)="selectPayment(method)">
                 <div class="option-radio">
                   <span class="radio-dot" *ngIf="method.selected"></span>
                 </div>
@@ -86,6 +108,9 @@
                 <div class="option-content">
                   <h3 class="option-title">{{ method.name }}</h3>
                   <p class="option-desc">{{ method.description }}</p>
+                </div>
+                <div class="auto-badge" *ngIf="method.selected && detectedProvider">
+                  ✓ Auto-selected
                 </div>
               </div>
             </div>
@@ -98,7 +123,7 @@
           <div class="order-summary">
             <h2 class="summary-title">Order Summary</h2>
             
-            <!-- Cart Items with Quantity and Individual Totals -->
+            <!-- Cart Items -->
             <div class="summary-items">
               <div class="summary-item-header">
                 <span>Product</span>
@@ -106,7 +131,6 @@
                 <span>Total</span>
               </div>
               
-              <!-- FIXED: Use proper property names -->
               <div class="summary-item" *ngFor="let item of cartItems">
                 <div class="item-info">
                   <span class="item-name">{{ item.product.name }}</span>
@@ -118,13 +142,11 @@
             
             <div class="summary-divider"></div>
             
-            <!-- Subtotal -->
             <div class="summary-row">
               <span>Subtotal</span>
               <span>{{ subtotal | number }} CFA</span>
             </div>
             
-            <!-- Delivery -->
             <div class="summary-row">
               <span>Delivery</span>
               <span *ngIf="deliveryPrice === 0">Free</span>
@@ -133,24 +155,22 @@
             
             <div class="summary-divider"></div>
             
-            <!-- Grand Total -->
             <div class="summary-row total">
               <span>Total Cost</span>
               <span>{{ total | number }} CFA</span>
             </div>
             
             <!-- Place Order Button -->
-            
             <button class="place-order-btn" (click)="placeOrder()" [disabled]="!isFormValid() || isProcessing">
               <span *ngIf="!isProcessing">
-                Pay {{ total | number }} CFA with {{ selectedPayment.name }}
+                💳 Pay {{ total | number }} CFA with {{ selectedPayment.name }}
               </span>
               <span *ngIf="isProcessing">
                 ⏳ Processing... Check your phone
               </span>
             </button>
 
-            <!-- Add payment method info -->
+            <!-- Payment Info -->
             <div class="payment-info" *ngIf="selectedPayment.id === 'mobile_money' || selectedPayment.id === 'orange_money'">
               <div class="info-box">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">

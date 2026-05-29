@@ -1,6 +1,6 @@
 from django import views
 from django.urls import path
-from .views import ProductListCreateView ,ProductDetailView,CartView,CartItemDetailView,ProfileView ,CheckoutView ,OrderHistoryView ,OrderDetailView, RegisterView
+from .views import ProductListCreateView ,ProductDetailView,CartView,CartItemDetailView,ProfileView ,CheckoutView , create_order,OrderHistoryView ,OrderDetailView, RegisterView
 from .views import EmailTokenObtainPairView, test_campay_connection
 
 urlpatterns = [
@@ -15,4 +15,5 @@ urlpatterns = [
       path('register/', RegisterView.as_view()),
     path('profile/', ProfileView.as_view()),
     path('test-campay/', test_campay_connection, name='test_campay'),
+    path('orders/create/', create_order, name='create_order')
 ]
