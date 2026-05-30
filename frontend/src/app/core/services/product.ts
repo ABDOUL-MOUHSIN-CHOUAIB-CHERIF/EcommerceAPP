@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from '../../models/product';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({
@@ -11,7 +12,7 @@ import { Product } from '../../models/product';
 export class ProductService {
 
   // Django API  URL
-  APIURL = 'http://127.0.0.1:8000/api/products/';
+  APIURL = environment.apiUrl + '/products/';
 
   constructor(private http: HttpClient) {}
 

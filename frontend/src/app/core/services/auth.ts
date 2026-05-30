@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpHeaders
-} from '@angular/common/http';
+import {  HttpClient,HttpHeaders} from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
-
+import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { Token } from '@angular/compiler';
 
@@ -13,7 +10,7 @@ import { Token } from '@angular/compiler';
 })
 export class AuthService {
 
-  private API_URL = 'http://127.0.0.1:8000/api';
+  private API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

@@ -2,16 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  private apiUrl = 'http://127.0.0.1:8000/api/';
+  private apiUrl = environment.apiUrl;  
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService  // ← ADD THIS
+    private authService: AuthService  
   ) {}
 
   // Get auth headers with token

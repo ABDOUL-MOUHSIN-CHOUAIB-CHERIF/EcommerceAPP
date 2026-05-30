@@ -28,7 +28,7 @@ export class Navbar implements OnInit, OnDestroy {
   ) {
     // ✅ Listen for navbar refresh events
     this.refreshSubscription = this.cartRefreshService.refreshNavbar$.subscribe((count: number) => {
-      console.log('🔄 Updating navbar cart count to:', count);
+      console.log(' Updating navbar cart count to:', count);
       this.cartCount = count;
       this.cdr.detectChanges();
     });

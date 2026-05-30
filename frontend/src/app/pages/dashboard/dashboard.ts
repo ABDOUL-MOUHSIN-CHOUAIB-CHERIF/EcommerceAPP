@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';  // ← ADD ChangeDetectorRef
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';  
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -31,7 +31,7 @@ export class Dashboard implements OnInit {
     private productService: ProductService,
     private authService: AuthService,
     private cartService: CartService,
-    private cdr: ChangeDetectorRef  // ← ADD THIS
+    private cdr: ChangeDetectorRef  
   ) {}
 
   ngOnInit(): void {
@@ -41,7 +41,7 @@ export class Dashboard implements OnInit {
   loadAllData() {
     this.loading = true;
     this.errorMessage = '';
-    this.cdr.detectChanges();  // ← FORCE DETECTION AFTER LOADING STARTS
+    this.cdr.detectChanges();  
 
     const userId = this.authService.getUserId();
     
@@ -68,7 +68,7 @@ export class Dashboard implements OnInit {
         }
         
         this.loading = false;
-        this.cdr.detectChanges();  // ← CRITICAL: Force view update after data loads
+        this.cdr.detectChanges();  
         
         console.log('Dashboard loaded:', {
           products: this.products.length,
@@ -80,13 +80,13 @@ export class Dashboard implements OnInit {
         console.error('Error loading dashboard data:', error);
         this.errorMessage = 'Unable to load products. Please refresh the page.';
         this.loading = false;
-        this.cdr.detectChanges();  // ← FORCE UPDATE ON ERROR TOO
+        this.cdr.detectChanges();  
         
         this.productService.getProducts().subscribe({
           next: (products) => {
             this.products = products;
             this.errorMessage = '';
-            this.cdr.detectChanges();  // ← FORCE UPDATE AFTER RETRY
+            this.cdr.detectChanges();  
           }
         });
       }

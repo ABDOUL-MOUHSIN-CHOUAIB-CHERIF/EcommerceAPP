@@ -1,6 +1,6 @@
 // products.ts
 
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';  // ← ADD ChangeDetectorRef
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';  
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -41,7 +41,7 @@ export class Products implements OnInit {
     private authService: AuthService,
     private cartService: CartService,
     private router: Router,
-    private cdr: ChangeDetectorRef  // ← ADD THIS
+    private cdr: ChangeDetectorRef  
   ) {}
 
   ngOnInit(): void {
@@ -52,7 +52,7 @@ export class Products implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = '';
-    this.cdr.detectChanges();  // ← FORCE DETECTION AFTER LOADING STARTS
+    this.cdr.detectChanges();  
 
     const userId = this.authService.getUserId();
 
