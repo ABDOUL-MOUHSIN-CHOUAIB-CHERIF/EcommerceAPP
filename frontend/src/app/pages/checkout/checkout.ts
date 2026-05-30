@@ -175,7 +175,7 @@ export class Checkout implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // ✅ DETECT PROVIDER FROM PHONE NUMBER
+  //  DETECT PROVIDER FROM PHONE NUMBER
   detectProvider(phone: string): string {
     if (!phone) return '';
     
@@ -197,7 +197,7 @@ export class Checkout implements OnInit {
     return 'unknown';
   }
 
-  // ✅ GET PROVIDER DISPLAY NAME
+  //  GET PROVIDER DISPLAY NAME
   getProviderDisplayName(provider: string): string {
     switch(provider) {
       case 'mtn': return 'MTN Cameroon';
@@ -206,7 +206,7 @@ export class Checkout implements OnInit {
     }
   }
 
-  // ✅ GET PROVIDER COLOR CLASS
+  //  GET PROVIDER COLOR CLASS
   getProviderColorClass(provider: string): string {
     switch(provider) {
       case 'mtn': return 'provider-mtn';
@@ -215,7 +215,7 @@ export class Checkout implements OnInit {
     }
   }
 
-  // ✅ AUTO DETECT AND SET PAYMENT METHOD
+  //  AUTO DETECT AND SET PAYMENT METHOD
   detectAndSetProvider() {
     const phone = this.shippingDetails.phoneNumber;
     if (!phone) {
@@ -252,7 +252,7 @@ export class Checkout implements OnInit {
     this.detectAndSetProvider();
   }
 
-  // ✅ VALIDATE PHONE NUMBER BEFORE PAYMENT
+  //  VALIDATE PHONE NUMBER BEFORE PAYMENT
   validatePhoneNumberBeforePayment(): string | null {
     const phone = this.shippingDetails.phoneNumber.trim();
     
@@ -284,12 +284,12 @@ export class Checkout implements OnInit {
     );
   }
 
-  // ✅ GENERATE LOCAL ORDER ID (No API call)
+  //  GENERATE LOCAL ORDER ID (No API call)
   generateLocalOrderId(): number {
     return Date.now();
   }
 
-  // ✅ INITIATE PAYMENT DIRECTLY (NO ORDER CREATION)
+  //  INITIATE PAYMENT DIRECTLY (NO ORDER CREATION)
   initiateMobilePayment() {
     // Validate form
     if (!this.isFormValid()) {
@@ -345,7 +345,7 @@ export class Checkout implements OnInit {
     });
   }
 
-  // ✅ Poll for payment status
+  //  Poll for payment status
   pollPaymentStatus(reference: string, orderId: number) {
     let attempts = 0;
     const maxAttempts = 10; // 10 attempts = 30 seconds
@@ -390,7 +390,7 @@ export class Checkout implements OnInit {
     }, 3000);
   }
 
-  // ✅ Main place order method
+  //  Main place order method
   placeOrder() {
     if (this.selectedPayment.id === 'mobile_money' || this.selectedPayment.id === 'orange_money') {
       this.initiateMobilePayment();

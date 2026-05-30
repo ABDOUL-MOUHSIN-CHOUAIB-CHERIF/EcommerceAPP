@@ -14,13 +14,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-please-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 # Allowed hosts
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com,.vercel.app').split(',')
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', '.vercel.app']
 
 # CamPay Configuration
 CAMPAY_BASE_URL = os.getenv('CAMPAY_BASE_URL', 'https://demo.campay.net')
@@ -72,7 +72,6 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # For static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,7 +84,6 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
-    os.getenv('FRONTEND_URL', 'https://your-frontend.vercel.app'),
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -130,13 +128,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
-# Database - Use environment variable for production
-import dj_database_url
+# Database - Simple configuration for local development
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"postgresql://{os.getenv('DB_USER', 'postgres')}:{os.getenv('DB_PASSWORD', '9874')}@localhost:5432/{os.getenv('DB_NAME', 'ecommerce')}",
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'ecommerce'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', '9874'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
 }
 
 # Password validation
@@ -167,7 +168,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
@@ -176,5 +176,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Login/Logout URLs
+# Login URL
 LOGIN_URL = '/api/auth/login/'
