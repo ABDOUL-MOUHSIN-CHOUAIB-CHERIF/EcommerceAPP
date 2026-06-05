@@ -1,0 +1,11 @@
+{
+  "buildCommand": "ng build --configuration=production",
+  "outputDirectory": "dist/ecommerce/browser",
+  "framework": "angular",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
