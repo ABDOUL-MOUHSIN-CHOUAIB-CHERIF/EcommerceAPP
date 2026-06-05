@@ -32,7 +32,8 @@
             "server": "src/main.server.ts",
             "outputMode": "server",
             "ssr": {
-              "entry": "src/server.ts"
+              "entry": "src/server.ts",
+              "prerender": false
             }
           },
           "configurations": {
@@ -49,7 +50,8 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "prerender": false
             },
             "development": {
               "optimization": false,
@@ -67,9 +69,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
-           "options": {
-              "allowedHosts": ["likewise-extras-zen.ngrok-free.dev"]
-            },
+          "options": {
+            "allowedHosts": ["likewise-extras-zen.ngrok-free.dev"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "ecommerce:build:production"
