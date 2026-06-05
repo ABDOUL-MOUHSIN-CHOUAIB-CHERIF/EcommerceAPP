@@ -17,6 +17,7 @@ interface CartItemDisplay {
   productPrice: number;
   productImage: string;
   productCategory: string;
+  productStock: number;  
   total: number;
 }
 
@@ -128,20 +129,43 @@ export class Cart implements OnInit {
     });
   }
 
-  updateQuantity(item: CartItemDisplay, change: number) {
-    const newQuantity = item.quantity + change;
-    if (newQuantity >= 1 && newQuantity <= 99) {
-      this.cartService.updateCartItem(item.id, newQuantity).subscribe({
-        next: () => {
-          item.quantity = newQuantity;
-          item.total = item.productPrice * newQuantity;
-          this.calculateAll();
-          this.cdr.detectChanges();
-        },
-        error: (error: any) => console.error('Error updating quantity:', error)
-      });
-    }
+updateQuantity(item: CartItemDisplay, change: number) {
+  const newQuantity = item.quantity + change;
+  
+  console.log('Update quantity:', { current: item.quantity, change, new: newQuantity, stock: item.productStock });
+  
+  // Don't go below 1
+  if (newQuantity < 1) {
+    console.log('Quantity cannot be less than 1');
+    return;
   }
+  
+  // Check stock when increasing
+  if (change > 0 && newQuantity > item.productStock) {
+    alert(`Sorry, only ${item.productStock} items available in stock`);
+    return;
+  }
+  
+  this.isLoading = true;
+  this.cdr.detectChanges();
+  
+  this.cartService.updateCartItem(item.id, newQuantity).subscribe({
+    next: () => {
+      item.quantity = newQuantity;
+      item.total = item.productPrice * newQuantity;
+      this.calculateAll();
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      console.log('Quantity updated successfully');
+    },
+    error: (error: any) => {
+      console.error('Error updating quantity:', error);
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      alert('Failed to update quantity. Please try again.');
+    }
+  });
+}
 
   removeItem(item: CartItemDisplay) {
     this.cartService.removeCartItem(item.id).subscribe({

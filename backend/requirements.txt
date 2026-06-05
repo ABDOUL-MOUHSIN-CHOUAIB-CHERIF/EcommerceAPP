@@ -21,3 +21,6 @@ gunicorn==21.2.0
 
 # Utilities
 Pillow==12.2.0
+
+#payment 
+campay==1.0.0

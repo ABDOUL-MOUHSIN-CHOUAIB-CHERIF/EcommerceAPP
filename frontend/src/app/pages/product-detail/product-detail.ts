@@ -1,5 +1,3 @@
-
-
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -60,9 +58,9 @@ export class ProductDetail implements OnInit {
     if (product?.image_url && product.image_url !== '') {
       return product.image_url;
     }
-    
     return `https://picsum.photos/300/300?random=${product?.id || 1}`;
   }
+
   loadAllData(productId: number) {
     this.isLoading = true;
     this.errorMessage = '';
@@ -153,7 +151,11 @@ export class ProductDetail implements OnInit {
   }
 
   increaseQty() {
-    this.quantity++;
+    if (this.product && this.quantity < this.product.stock) {
+      this.quantity++;
+    } else if (this.product) {
+      alert(`Only ${this.product.stock} items available in stock`);
+    }
   }
 
   decreaseQty() {
@@ -163,6 +165,11 @@ export class ProductDetail implements OnInit {
   }
 
   addToCart() {
+    if (this.product && this.quantity > this.product.stock) {
+      alert(`Sorry, only ${this.product.stock} items available in stock.`);
+      return;
+    }
+    
     if (this.authService.isTokenExpired()) {
       alert('Session expired. Please login again.');
       this.authService.logout();
@@ -187,7 +194,8 @@ export class ProductDetail implements OnInit {
       userId: userId,
       productId: this.product.id,
       quantity: this.quantity,
-      productName: this.product.name
+      productName: this.product.name,
+      availableStock: this.product.stock
     });
     
     this.cartService.addToCart(userId, this.product.id, this.quantity).subscribe({
@@ -195,10 +203,8 @@ export class ProductDetail implements OnInit {
         console.log('Cart response:', response);
         alert(`${this.product?.name} added to cart!`);
         
-        // ✅ TRIGGER CART REFRESH FOR CART PAGE AND NAVBAR
         this.cartRefreshService.triggerCartRefresh();
         
-        // Also get updated cart count and refresh navbar
         this.cartService.getCart(userId).subscribe({
           next: (cart: any) => {
             const cartItems = cart.items || [];
@@ -211,7 +217,11 @@ export class ProductDetail implements OnInit {
       },
       error: (error) => {
         console.error('Error adding to cart:', error);
-        alert('Failed to add to cart. Please try again.');
+        if (error.status === 400 && error.error?.error?.includes('stock')) {
+          alert(error.error.error);
+        } else {
+          alert('Failed to add to cart. Please try again.');
+        }
       }
     });
   }

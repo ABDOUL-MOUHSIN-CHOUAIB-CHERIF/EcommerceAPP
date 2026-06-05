@@ -15,7 +15,7 @@ export class ProductService {
   APIURL = environment.apiUrl + 'products/';
 
   constructor(private http: HttpClient) {}
-
+ 
   // GET ALL PRODUCTS
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(

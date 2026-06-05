@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: everest-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn ecommerce.wsgi:application
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: everest-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: CAMPAY_BASE_URL
+        value: https://api.cam-pay.com
+      - key: CAMPAY_APP_USERNAME
+        sync: false
+      - key: CAMPAY_APP_PASSWORD
+        sync: false
+      - key: CAMPAY_PERMANENT_TOKEN
+        sync: false
+      - key: CAMPAY_MERCHANT_PHONE
+        sync: false
+
+databases:
+  - name: everest-db
+    plan: free
