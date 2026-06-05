@@ -56,6 +56,13 @@ export class ProductDetail implements OnInit {
     }
   }
 
+  getProductImage(product: any): string {
+    if (product?.image_url && product.image_url !== '') {
+      return product.image_url;
+    }
+    
+    return `https://picsum.photos/300/300?random=${product?.id || 1}`;
+  }
   loadAllData(productId: number) {
     this.isLoading = true;
     this.errorMessage = '';

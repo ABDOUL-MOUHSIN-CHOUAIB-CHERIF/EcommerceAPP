@@ -73,83 +73,70 @@ export class Checkout implements OnInit {
     this.loadAllData();
   }
 
-  loadAllData() {
-    this.isLoading = true;
-    this.cdr.detectChanges();
 
-    this.cartService.getCart(this.userId!).subscribe({
-      next: (cartResponse: any) => {
-        const rawCartItems = cartResponse.items || [];
+loadAllData() {
+  this.isLoading = true;
+  this.cdr.detectChanges();
 
-        if (rawCartItems.length === 0) {
-          this.cartItems = [];
+  this.cartService.getCart(this.userId!).subscribe({
+    next: (cartResponse: any) => {
+      console.log('Cart response:', cartResponse);
+      
+      const rawCartItems = cartResponse.items || [];
+
+      if (rawCartItems.length === 0) {
+        this.cartItems = [];
+        this.calculateAll();
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+
+      // ✅ FIXED: Use product data directly from cart response
+      this.cartItems = rawCartItems.map((item: any) => {
+        const product = item.product;
+        
+        return {
+          id: item.id,
+          quantity: item.quantity,
+          product: {
+            id: product?.id || 0,
+            name: product?.name || 'Unknown Product',
+            price: product?.price || 0,
+            image_url: product?.image_url || '',
+            category: product?.category || 'General'
+          }
+        };
+      });
+
+      console.log('✅ Cart items loaded:', this.cartItems);
+
+      // Load user profile
+      this.authService.getProfile().subscribe({
+        next: (profile: any) => {
+          this.userProfile = profile;
+          if (this.userProfile) {
+            this.shippingDetails.fullName = this.userProfile.full_name || this.userProfile.username || '';
+            this.shippingDetails.phoneNumber = this.userProfile.phone || '';
+          }
           this.calculateAll();
           this.isLoading = false;
           this.cdr.detectChanges();
-          return;
+        },
+        error: () => {
+          this.calculateAll();
+          this.isLoading = false;
+          this.cdr.detectChanges();
         }
-
-        let loadedCount = 0;
-        const tempItems: any[] = [];
-
-        rawCartItems.forEach((item: any, index: number) => {
-          this.productService.getProduct(item.product).subscribe({
-            next: (product: any) => {
-              tempItems[index] = {
-                id: item.id,
-                quantity: item.quantity,
-                product: product
-              };
-              loadedCount++;
-
-              if (loadedCount === rawCartItems.length) {
-                this.cartItems = tempItems;
-                this.authService.getProfile().subscribe({
-                  next: (profile: any) => {
-                    this.userProfile = profile;
-                    if (this.userProfile) {
-                      this.shippingDetails.fullName = this.userProfile.full_name || this.userProfile.username || '';
-                      this.shippingDetails.phoneNumber = this.userProfile.phone || '';
-                      this.detectAndSetProvider();
-                    }
-                    this.calculateAll();
-                    this.isLoading = false;
-                    this.cdr.detectChanges();
-                  },
-                  error: () => {
-                    this.calculateAll();
-                    this.isLoading = false;
-                    this.cdr.detectChanges();
-                  }
-                });
-              }
-            },
-            error: (error: any) => {
-              console.error('Error loading product:', error);
-              tempItems[index] = {
-                id: item.id,
-                quantity: item.quantity,
-                product: { name: 'Product Unavailable', price: 0, image_url: '', category: 'Unknown' }
-              };
-              loadedCount++;
-
-              if (loadedCount === rawCartItems.length) {
-                this.cartItems = tempItems;
-                this.calculateAll();
-                this.isLoading = false;
-                this.cdr.detectChanges();
-              }
-            }
-          });
-        });
-      },
-      error: (error: any) => {
-        console.error('Error loading cart:', error);
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
+      });
+    },
+    error: (error: any) => {
+      console.error('Error loading cart:', error);
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   calculateAll() {
     this.subtotal = this.cartItems.reduce((sum: number, item: any) => {

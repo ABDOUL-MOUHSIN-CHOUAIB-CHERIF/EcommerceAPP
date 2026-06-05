@@ -35,7 +35,12 @@
         <div class="cart-item" *ngFor="let item of cartItems">
           <div class="cart-item-product">
             <div class="cart-item-image">
-              <img [src]="item.productImage" [alt]="item.productName" onerror="this.src='assets/placeholder.png'">
+              <!-- ✅ FIXED: Use correct properties from CartItemDisplay -->
+              <img 
+                [src]="item.productImage || 'https://picsum.photos/80/80?random=' + item.productId" 
+                [alt]="item.productName"
+                (error)="item.productImage = 'https://picsum.photos/80/80?random=' + item.productId"
+              >
             </div>
             <div class="cart-item-info">
               <h3 class="cart-item-name">{{ item.productName }}</h3>

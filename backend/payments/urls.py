@@ -5,4 +5,5 @@ from . import views
 urlpatterns = [
     path('initiate-mobile/', views.initiate_mobile_payment, name='initiate_mobile'),
     path('status/<str:reference>/', views.check_payment_status, name='payment_status'),
+    path('webhook/', views.payment_webhook, name='payment_webhook'),
 ]

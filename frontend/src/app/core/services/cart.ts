@@ -11,9 +11,9 @@ export class CartService {
   private apiUrl = environment.apiUrl;  
 
   constructor(
-    private http: HttpClient,
+    private http: HttpClient, 
     private authService: AuthService  
-  ) {}
+  ) {} 
 
   // Get auth headers with token
   private getAuthHeaders(): HttpHeaders {
@@ -56,4 +56,12 @@ export class CartService {
       { headers: this.getAuthHeaders() }
     );
   }
+
+
+getProductImage(item: any): string {
+  if (item.productImage && item.productImage !== '') {
+    return item.productImage;
+  }
+  return 'https://picsum.photos/80/80?random=' + (item.id || 1);
+}
 }

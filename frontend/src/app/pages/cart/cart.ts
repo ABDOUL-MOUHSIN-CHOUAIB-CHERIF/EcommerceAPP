@@ -1,23 +1,13 @@
+// frontend/src/app/pages/cart/cart.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, Observable } from 'rxjs';  // ← Add Observable
 import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { CartService } from '../../core/services/cart';
 import { AuthService } from '../../core/services/auth';
 import { ProductService } from '../../core/services/product';
-
-// Define the Product type
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image_url: string;
-  category: string;
-  description?: string;
-}
 
 interface CartItemDisplay {
   id: number;
@@ -69,6 +59,7 @@ export class Cart implements OnInit {
     }
   }
 
+  // ✅ FIXED: Use product data directly from cart response - NO FETCHING NEEDED!
   loadCartItems() {
     this.isLoading = true;
     this.cdr.detectChanges();
@@ -89,43 +80,28 @@ export class Cart implements OnInit {
           return;
         }
         
-        // Create an array of observables for each product
-        const productRequests: Observable<Product>[] = rawItems.map((item: any) => 
-          this.productService.getProduct(item.product)
-        );
-        
-        // Use forkJoin with proper typing
-        forkJoin(productRequests).subscribe({
-          next: (products: Product[]) => {  
-            console.log('✅ Loaded products:', products);
-            
-            // Combine cart items with product details
-            this.cartItems = rawItems.map((item: any, index: number) => {
-              const product = products[index];
-              return {
-                id: item.id,
-                quantity: item.quantity,
-                productId: item.product,
-                productName: product?.name || 'Unknown Product',
-                productPrice: product?.price || 0,
-                productImage: product?.image_url || '',
-                productCategory: product?.category || 'General',
-                total: (product?.price || 0) * item.quantity
-              };
-            });
-            
-            console.log('✅ Combined cart items:', this.cartItems);
-            
-            this.calculateAll();
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          },
-          error: (error: any) => {
-            console.error('Error loading product details:', error);
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          }
+        // ✅ DIRECT MAPPING - product data is already in the response!
+        this.cartItems = rawItems.map((item: any) => {
+          // The product data is already embedded in the cart item
+          const product = item.product;
+          
+          return {
+            id: item.id,
+            quantity: item.quantity,
+            productId: product?.id || 0,
+            productName: product?.name || 'Unknown Product',
+            productPrice: product?.price || 0,
+            productImage: product?.image_url || '',
+            productCategory: product?.category || 'General',
+            total: (product?.price || 0) * item.quantity
+          };
         });
+        
+        console.log('✅ Cart items loaded:', this.cartItems);
+        
+        this.calculateAll();
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error: any) => {
         console.error('Error loading cart:', error);

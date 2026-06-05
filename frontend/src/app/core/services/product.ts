@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
 export class ProductService {
 
   // Django API  URL
-  APIURL = environment.apiUrl + '/products/';
+  APIURL = environment.apiUrl + 'products/';
 
   constructor(private http: HttpClient) {}
 
@@ -30,4 +30,11 @@ export class ProductService {
     );
   }
 
+  getProductImage(product: any): string {
+    if (product?.image_url && product.image_url !== '') {
+      return product.image_url;
+    }
+  
+    return `https://picsum.photos/300/300?random=${product?.id || 1}`;
+  }
 }

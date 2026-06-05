@@ -23,7 +23,7 @@ import { CartService } from '../../core/services/cart';
   ],
   templateUrl: './products.html',
   styleUrls: ['./products.css']
-})
+}) 
 export class Products implements OnInit {
 
   products: any[] = [];
