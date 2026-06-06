@@ -1,8 +1,9 @@
 {
-  "buildCommand": "npm install --legacy-peer-deps && ng build --configuration=production",
-  "outputDirectory": "dist/ecommerce",
-  "framework": "angular",
+  "buildCommand": "ng build --configuration=production",
+  "outputDirectory": "dist/ecommerce/browser",
+  "devCommand": "ng serve",
   "installCommand": "npm install --legacy-peer-deps",
+  "framework": "angular",
   "routes": [
     {
       "src": "/(.*)",
