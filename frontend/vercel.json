@@ -6,6 +6,14 @@
   "framework": "angular",
   "routes": [
     {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)\\.(js|css|woff2|png|jpg|jpeg|gif|svg|ico)$",
+      "dest": "/$1.$2"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
