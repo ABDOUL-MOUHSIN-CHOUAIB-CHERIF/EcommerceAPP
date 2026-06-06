@@ -53,11 +53,12 @@ app.use((req, res, next) => {
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 4000;
-  app.listen(port, (error) => {
+  //  FIXED: Added ?: any to make error parameter optional
+  app.listen(port, (error?: any) => {
     if (error) {
+      console.error('Error starting server:', error);
       throw error;
     }
-
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
 }
