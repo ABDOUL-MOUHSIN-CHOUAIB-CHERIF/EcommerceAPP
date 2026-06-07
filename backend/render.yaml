@@ -3,7 +3,7 @@ services:
     name: everest-backend
     runtime: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && python manage.py migrate
     startCommand: gunicorn ecommerce.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DATABASE_URL
