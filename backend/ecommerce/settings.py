@@ -73,6 +73,7 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -87,13 +88,13 @@ CORS_ALLOWED_ORIGINS = [
     "https://ecommerce-app-d7t5.vercel.app",  # to be changed after depployment
 ]
 
-if os.getenv('DATABASE_URL'):
-    DATABASES = {
+# if os.getenv('DATABASE_URL'):
+DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
             conn_max_age=600
         )
-    }
+}
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -137,17 +138,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
-# Database - Simple configuration for local development
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'ecommerce'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', '9874'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
-}
+# # Database - Simple configuration for local development
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'ecommerce'),
+#         'USER': os.getenv('DB_USER', 'postgres'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', '9874'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -177,6 +178,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files
 MEDIA_URL = '/media/'
