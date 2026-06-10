@@ -2,7 +2,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 // List of public endpoints that should NOT have Authorization header
-const publicEndpoints = ['/api/register/', '/api/token/', '/api/auth/google/'];
+const publicEndpoints = ['/api/register/', '/api/token/'];
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('access_token');
