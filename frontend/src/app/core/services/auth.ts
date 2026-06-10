@@ -24,7 +24,7 @@ export class AuthService {
   // REGISTER
   register(data: any): Observable<any> {
     return this.http.post(
-      `${this.API_URL}register/`,  
+      `${this.API_URL}/register/`,  
       data
     );
   }
@@ -70,7 +70,7 @@ export class AuthService {
   // PROFILE
   getProfile(): Observable<any> {
     return this.http.get(
-      `${this.API_URL}profile/`,  
+      `${this.API_URL}/profile/`,  
       this.getAuthHeaders()
     );
   }
