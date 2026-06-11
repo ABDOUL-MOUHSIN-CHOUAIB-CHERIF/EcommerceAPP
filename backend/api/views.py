@@ -295,7 +295,7 @@ def create_order(request):
         }, status=400)
     
 class CategoryListCreateView(APIView):
-    permission_classes = [AllowAny]  # Public access (or change to IsAuthenticated if needed)
+    permission_classes = [AllowAny]  
 
     def get(self, request):
         categories = Category.objects.all()
