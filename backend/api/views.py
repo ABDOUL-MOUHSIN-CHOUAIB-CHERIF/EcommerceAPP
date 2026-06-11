@@ -15,6 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .models import Order, OrderItem  
 from rest_framework.permissions import AllowAny
+from .models import Category
+from .serializers import CategorySerializer
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -291,3 +293,18 @@ def create_order(request):
             'success': False,
             'error': str(e)
         }, status=400)
+    
+class CategoryListCreateView(APIView):
+    permission_classes = [AllowAny]  # Public access (or change to IsAuthenticated if needed)
+
+    def get(self, request):
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
