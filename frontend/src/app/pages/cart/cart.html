@@ -78,11 +78,7 @@
           <span>{{ subtotal | number }} CFA</span>
         </div>
         
-        <div class="summary-row">
-          <span>Shipping</span>
-          <span *ngIf="shipping === 0">Free</span>
-          <span *ngIf="shipping > 0">{{ shipping | number }} CFA</span>
-        </div>
+      
         
         <div class="summary-row">
           <span>Tax (5%)</span>

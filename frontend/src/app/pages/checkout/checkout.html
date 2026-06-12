@@ -39,23 +39,6 @@
                        (input)="onPhoneNumberChange()"
                        placeholder="670000000 or 650000000">
                 
-                <!-- Provider Detection Display -->
-                <div class="phone-detection" *ngIf="shippingDetails.phoneNumber">
-                  <div class="detected-provider" [class]="getProviderColorClass(detectedProvider)" *ngIf="detectedProvider">
-                    <span class="provider-icon">
-                      <span *ngIf="detectedProvider === 'mtn'">📱</span>
-                      <span *ngIf="detectedProvider === 'orange'">📱</span>
-                    </span>
-                    <span class="provider-text">Detected: {{ getProviderDisplayName(detectedProvider) }}</span>
-                    <span class="provider-badge" [class]="detectedProvider === 'mtn' ? 'badge-mtn' : 'badge-orange'">
-                      {{ detectedProvider === 'mtn' ? 'MTN' : 'ORANGE' }}
-                    </span>
-                  </div>
-                  <div class="phone-error" *ngIf="phoneError">
-                    ⚠️ {{ phoneError }}
-                  </div>
-                </div>
-                
                 <small class="phone-hint">Format: 670000000 (MTN) or 650000000 (Orange)</small>
               </div>
               

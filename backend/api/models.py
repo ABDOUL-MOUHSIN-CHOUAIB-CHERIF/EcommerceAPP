@@ -18,7 +18,7 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
-    # ✅ ADD THIS METHOD - Returns full image URL
+    
     @property
     def image_url(self):
         if self.image:
