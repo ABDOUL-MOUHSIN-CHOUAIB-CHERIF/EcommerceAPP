@@ -117,7 +117,7 @@ export class Cart implements OnInit {
     this.shipping = this.subtotal > 50000 ? 0 : 5000;
     this.tax = this.subtotal * 0.05;
     this.discountAmount = this.promoApplied && this.promoCode === 'EVEREST20' ? this.subtotal * 0.2 : 0;
-    this.total = this.subtotal + this.tax - this.discountAmount;
+    this.total = this.subtotal;
     this.cdr.detectChanges();
     
     console.log('Calculated totals:', {
