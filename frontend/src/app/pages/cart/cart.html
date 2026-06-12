@@ -97,18 +97,6 @@
           <span>{{ total | number }} CFA</span>
         </div>
         
-        <div class="promo-section">
-          <div class="promo-input-group">
-            <input 
-              type="text" 
-              placeholder="PROMO CODE" 
-              class="promo-input"
-              [(ngModel)]="promoCode">
-            <button class="apply-btn" (click)="applyPromo()">Apply</button>
-          </div>
-          <p class="promo-hint" *ngIf="!promoApplied">Use code: EVEREST20 for 20% off</p>
-          <p class="promo-success" *ngIf="promoApplied">✓ Promo code applied! 20% discount</p>
-        </div>
         
         <button class="checkout-btn" (click)="proceedToCheckout()">
           Proceed to Checkout
