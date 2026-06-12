@@ -114,10 +114,10 @@
   padding-top: 20px;
   flex-wrap: wrap;
 }
-
+ 
 .div2 {
   position: relative;
-  background-image: url('../../../../public/images/image1.jpg');
+  background-image: url('../../../../public/images/arsenal.jpeg');
   background-size: cover;
   background-position: center;
   height: 300px;
