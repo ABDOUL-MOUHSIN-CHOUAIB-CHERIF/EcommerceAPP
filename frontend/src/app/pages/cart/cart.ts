@@ -114,7 +114,7 @@ export class Cart implements OnInit {
 
   calculateAll() {
     this.subtotal = this.cartItems.reduce((sum, item) => sum + (item.productPrice * item.quantity), 0);
-    this.shipping = this.subtotal > 50000 ? 0 : 5000;
+    this.shipping = this.subtotal > 50000 ? 0 : 0;
     this.tax = this.subtotal * 0.05;
     this.discountAmount = this.promoApplied && this.promoCode === 'EVEREST20' ? this.subtotal * 0.2 : 0;
     this.total = this.subtotal + this.shipping + this.tax - this.discountAmount;
