@@ -85,7 +85,8 @@ MIDDLEWARE = [
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
-    "https://ecommerce-app-d7t5.vercel.app",  # to be changed after depployment
+    "https://ecommerce-app-d7t5.vercel.app",
+      "https://ecommerce-app-self-five.vercel.app",  # to be changed after depployment
 ]
 
 # if os.getenv('DATABASE_URL'):
